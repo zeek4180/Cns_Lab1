@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exp 06 — MD5 Hash | CryptoLab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">&#9632;</div>
+    CryptoLab Manual
+  </a>
+  <div class="header-badge">CS3472 — Network Security</div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <a href="index.html" class="nav-item"><span class="nav-num">&nbsp;</span> Overview</a>
+    <div class="sidebar-section">Classical Ciphers</div>
+    <a href="exp01-caesar.html" class="nav-item"><span class="nav-num">01</span> Caesar Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp02-hill.html" class="nav-item"><span class="nav-num">02</span> Hill Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp03-playfair.html" class="nav-item"><span class="nav-num">03</span> Playfair Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <div class="sidebar-section">Asymmetric &amp; Hash</div>
+    <a href="exp04-rsa.html" class="nav-item"><span class="nav-num">04</span> RSA Algorithm <span class="nav-tag tag-modern">Modern</span></a>
+    <a href="exp05-sha1.html" class="nav-item"><span class="nav-num">05</span> SHA-1 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp06-md5.html" class="nav-item active"><span class="nav-num">06</span> MD5 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp07-dh.html" class="nav-item"><span class="nav-num">07</span> Diffie-Hellman <span class="nav-tag tag-key">Key Exch</span></a>
+  </nav>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <span class="current">Experiment 06 — MD5 Hash Function</span>
+    </div>
+
+    <div class="exp-header">
+      <div class="exp-label">Experiment 06 — Cryptographic Hash</div>
+      <div class="exp-title">MD5 <span>Hash Function</span></div>
+      <div class="exp-desc">MD5 (Message Digest Algorithm 5) produces a 128-bit hash. Designed by Ronald Rivest in 1991. Widely used for checksums and file integrity verification despite known cryptographic weaknesses.</div>
+      <div class="exp-tags">
+        <span class="etag">One-Way</span><span class="etag">128-bit Output</span><span class="etag">Little-Endian</span><span class="etag">Broken</span>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Aim</div>
+      <div class="info-card">
+        <div class="info-card-value">To implement MD5 and compare its structure with SHA-1, understanding the use of sine-derived constants, four auxiliary functions, and the little-endian byte order.</div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">MD5 vs SHA-1 Comparison</div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">Output Size</div>
+          <div class="info-card-value">MD5: 128 bits (32 hex) &nbsp;|&nbsp; SHA-1: 160 bits (40 hex)</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Rounds</div>
+          <div class="info-card-value">MD5: 64 rounds (4×16) &nbsp;|&nbsp; SHA-1: 80 rounds (4×20)</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Byte Order</div>
+          <div class="info-card-value">MD5: Little-Endian &nbsp;|&nbsp; SHA-1: Big-Endian</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Constants</div>
+          <div class="info-card-value">MD5: |sin(i)| × 2³² &nbsp;|&nbsp; SHA-1: sqrt of primes</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Source Code</div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Python — MD5 Implementation</span>
+          <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+        </div>
+        <pre><span class="kw">def</span> <span class="fn">r</span>(x, c): <span class="kw">return</span> ((x &lt;&lt; c) | (x &gt;&gt; (<span class="num">32</span> - c))) &amp; <span class="num">0xffffffff</span>
+
+<span class="kw">def</span> <span class="fn">md5</span>(m):
+    m = <span class="fn">bytearray</span>(m, <span class="str">'utf-8'</span>); l = (<span class="num">8</span> * <span class="fn">len</span>(m)) &amp; <span class="num">0xffffffffffffffff</span>
+    m += b<span class="str">'\x80'</span>
+    <span class="kw">while</span> <span class="fn">len</span>(m) % <span class="num">64</span> != <span class="num">56</span>: m += b<span class="str">'\x00'</span>
+    m += l.<span class="fn">to_bytes</span>(<span class="num">8</span>, <span class="str">'little'</span>)
+
+    A,B,C,D = <span class="num">0x67452301</span>,<span class="num">0xefcdab89</span>,<span class="num">0x98badcfe</span>,<span class="num">0x10325476</span>
+    K = [<span class="fn">int</span>(<span class="fn">abs</span>(__import__(<span class="str">'math'</span>).<span class="fn">sin</span>(i+<span class="num">1</span>))*<span class="num">2</span>**<span class="num">32</span>)&amp;<span class="num">0xffffffff</span> <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">64</span>)]
+    s = [<span class="num">7</span>,<span class="num">12</span>,<span class="num">17</span>,<span class="num">22</span>]*<span class="num">4</span>+[<span class="num">5</span>,<span class="num">9</span>,<span class="num">14</span>,<span class="num">20</span>]*<span class="num">4</span>+[<span class="num">4</span>,<span class="num">11</span>,<span class="num">16</span>,<span class="num">23</span>]*<span class="num">4</span>+[<span class="num">6</span>,<span class="num">10</span>,<span class="num">15</span>,<span class="num">21</span>]*<span class="num">4</span>
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="fn">len</span>(m), <span class="num">64</span>):
+        X = [<span class="fn">int</span>.<span class="fn">from_bytes</span>(m[i+j:i+j+<span class="num">4</span>], <span class="str">'little'</span>) <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="num">64</span>, <span class="num">4</span>)]
+        a, b, c, d = A, B, C, D
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="num">64</span>):
+            <span class="kw">if</span> j&lt;<span class="num">16</span>:   f=(b&amp;c)|(~b&amp;d);     g=j
+            <span class="kw">elif</span> j&lt;<span class="num">32</span>: f=(d&amp;b)|(~d&amp;c);     g=(<span class="num">5</span>*j+<span class="num">1</span>)%<span class="num">16</span>
+            <span class="kw">elif</span> j&lt;<span class="num">48</span>: f=b^c^d;            g=(<span class="num">3</span>*j+<span class="num">5</span>)%<span class="num">16</span>
+            <span class="kw">else</span>:       f=c^(b|~d);         g=(<span class="num">7</span>*j)%<span class="num">16</span>
+            a,b,c,d = d,(<span class="fn">r</span>((a+f+K[j]+X[g])&amp;<span class="num">0xffffffff</span>,s[j])+b)&amp;<span class="num">0xffffffff</span>,b,c
+        A=(A+a)&amp;<span class="num">0xffffffff</span>; B=(B+b)&amp;<span class="num">0xffffffff</span>
+        C=(C+c)&amp;<span class="num">0xffffffff</span>; D=(D+d)&amp;<span class="num">0xffffffff</span>
+    <span class="kw">return</span> <span class="str">''</span>.<span class="fn">join</span>(x.<span class="fn">to_bytes</span>(<span class="num">4</span>, <span class="str">'little'</span>).<span class="fn">hex</span>() <span class="kw">for</span> x <span class="kw">in</span> [A, B, C, D])
+
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+<span class="fn">print</span>(<span class="str">"MD5:"</span>, <span class="fn">md5</span>(t))</pre>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Interactive Demo</div>
+      <div class="interact-panel">
+        <div class="interact-header">&#9654; Compute MD5 (via SubtleCrypto API)</div>
+        <div class="interact-body">
+          <div class="input-row">
+            <div class="field"><label>Input Text</label><input type="text" id="md5-in" value="Hello World"></div>
+          </div>
+          <button class="run-btn" onclick="runMD5()">&#9654; Hash</button>
+          <div style="margin-top:1rem">
+            <div class="output-box" style="width:100%">
+              <div class="output-label">MD5 Digest (128-bit / 32 hex chars)</div>
+              <div class="output-value" id="md5-out" style="font-size:0.75rem;letter-spacing:0.05em">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Conclusion</div>
+      <div class="conclusion-box">
+        MD5 is still widely used for <strong>non-security purposes</strong> like file checksums and database deduplication. However, it is <strong>cryptographically broken</strong>: collision attacks are computationally feasible (demonstrated in 2004), and rainbow table attacks can reverse common password hashes. For security applications, use <strong>SHA-256/SHA-3 or bcrypt/Argon2</strong> for passwords.
+      </div>
+    </div>
+
+    <div class="exp-nav">
+      <a href="exp05-sha1.html">&#8592; Exp 05: SHA-1 Hash</a>
+      <a href="exp07-dh.html" class="next">Exp 07: Diffie-Hellman &#8594;</a>
+    </div>
+  </main>
+</div>
+
+<script>
+async function runMD5() {
+  document.getElementById('md5-out').textContent = 'MD5 is not natively supported in browser crypto. Run the Python source code above to see the MD5 digest.';
+}
+</script>
+</body>
+</html>

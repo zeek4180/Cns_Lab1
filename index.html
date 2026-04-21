@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoLab Manual — Home</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">&#9632;</div>
+    CryptoLab Manual
+  </a>
+  <div class="header-badge">CS3472 — Network Security</div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <a href="index.html" class="nav-item active"><span class="nav-num">&nbsp;</span> Overview</a>
+
+    <div class="sidebar-section">Classical Ciphers</div>
+    <a href="exp01-caesar.html" class="nav-item"><span class="nav-num">01</span> Caesar Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp02-hill.html" class="nav-item"><span class="nav-num">02</span> Hill Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp03-playfair.html" class="nav-item"><span class="nav-num">03</span> Playfair Cipher <span class="nav-tag tag-classical">Classical</span></a>
+
+    <div class="sidebar-section">Asymmetric &amp; Hash</div>
+    <a href="exp04-rsa.html" class="nav-item"><span class="nav-num">04</span> RSA Algorithm <span class="nav-tag tag-modern">Modern</span></a>
+    <a href="exp05-sha1.html" class="nav-item"><span class="nav-num">05</span> SHA-1 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp06-md5.html" class="nav-item"><span class="nav-num">06</span> MD5 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp07-dh.html" class="nav-item"><span class="nav-num">07</span> Diffie-Hellman <span class="nav-tag tag-key">Key Exch</span></a>
+  </nav>
+
+  <main>
+    <div class="exp-header">
+      <div class="exp-label">CS3472 — Network Security Lab Manual</div>
+      <div class="exp-title">Cryptography<br><span>Lab Experiments</span></div>
+      <div class="exp-desc">
+        A comprehensive laboratory manual covering classical and modern cryptographic algorithms. Each experiment includes theory, algorithm steps, source code, and interactive demonstrations.
+      </div>
+    </div>
+
+    <div class="section-title">Experiments</div>
+
+    <!-- Stats Bar -->
+    <div style="display:flex;gap:1.5rem;margin-bottom:2rem;flex-wrap:wrap;">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1.25rem;min-width:120px;">
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.25rem;">Total Experiments</div>
+        <div style="font-size:1.6rem;font-weight:800;color:var(--accent);">07</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1.25rem;min-width:120px;">
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.25rem;">Classical Ciphers</div>
+        <div style="font-size:1.6rem;font-weight:800;color:#a98ecf;">03</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1.25rem;min-width:120px;">
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.25rem;">Hash Functions</div>
+        <div style="font-size:1.6rem;font-weight:800;color:var(--yellow);">02</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1.25rem;min-width:120px;">
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.25rem;">Modern / Key Exch</div>
+        <div style="font-size:1.6rem;font-weight:800;color:var(--green);">02</div>
+      </div>
+    </div>
+
+    <div class="home-grid">
+      <a href="exp01-caesar.html" class="home-card">
+        <div class="home-card-num">Experiment 01</div>
+        <div class="home-card-title">Caesar Cipher</div>
+        <div class="home-card-desc">Substitution cipher using alphabetical shift. Foundation of classical cryptography.</div>
+        <span class="home-card-badge tag-classical">Classical</span>
+      </a>
+      <a href="exp02-hill.html" class="home-card">
+        <div class="home-card-num">Experiment 02</div>
+        <div class="home-card-title">Hill Cipher</div>
+        <div class="home-card-desc">Matrix-based polygraphic substitution using linear algebra over modular arithmetic.</div>
+        <span class="home-card-badge tag-classical">Classical</span>
+      </a>
+      <a href="exp03-playfair.html" class="home-card">
+        <div class="home-card-num">Experiment 03</div>
+        <div class="home-card-title">Playfair Cipher</div>
+        <div class="home-card-desc">Digraph substitution cipher using a 5×5 key square. First practical digraph cipher.</div>
+        <span class="home-card-badge tag-classical">Classical</span>
+      </a>
+      <a href="exp04-rsa.html" class="home-card">
+        <div class="home-card-num">Experiment 04</div>
+        <div class="home-card-title">RSA Algorithm</div>
+        <div class="home-card-desc">Public-key cryptosystem based on the difficulty of factoring large integers.</div>
+        <span class="home-card-badge tag-modern">Modern</span>
+      </a>
+      <a href="exp05-sha1.html" class="home-card">
+        <div class="home-card-num">Experiment 05</div>
+        <div class="home-card-title">SHA-1 Hash</div>
+        <div class="home-card-desc">Secure Hash Algorithm producing a 160-bit (20-byte) hash value.</div>
+        <span class="home-card-badge tag-hash">Hash</span>
+      </a>
+      <a href="exp06-md5.html" class="home-card">
+        <div class="home-card-num">Experiment 06</div>
+        <div class="home-card-title">MD5 Hash</div>
+        <div class="home-card-desc">Message Digest producing a 128-bit hash. Widely used for checksums.</div>
+        <span class="home-card-badge tag-hash">Hash</span>
+      </a>
+      <a href="exp07-dh.html" class="home-card">
+        <div class="home-card-num">Experiment 07</div>
+        <div class="home-card-title">Diffie-Hellman</div>
+        <div class="home-card-desc">Key exchange protocol enabling secure channel establishment over public channels.</div>
+        <span class="home-card-badge tag-key">Key Exchange</span>
+      </a>
+    </div>
+
+    <!-- Quick Reference -->
+    <div style="margin-top:2.5rem;">
+      <div class="section-title">Quick Reference</div>
+      <div class="interact-panel">
+        <table class="result-table">
+          <tr>
+            <th>#</th>
+            <th>Algorithm</th>
+            <th>Type</th>
+            <th>Key Space</th>
+            <th>Output</th>
+            <th>Status</th>
+          </tr>
+          <tr>
+            <td>01</td><td>Caesar Cipher</td><td>Symmetric</td><td>26 keys</td><td>Ciphertext</td>
+            <td style="color:#e24b4a">Insecure</td>
+          </tr>
+          <tr>
+            <td>02</td><td>Hill Cipher</td><td>Symmetric</td><td>Matrix Key</td><td>Ciphertext</td>
+            <td style="color:#e24b4a">Insecure</td>
+          </tr>
+          <tr>
+            <td>03</td><td>Playfair Cipher</td><td>Symmetric</td><td>5×5 Square</td><td>Ciphertext</td>
+            <td style="color:#e24b4a">Insecure</td>
+          </tr>
+          <tr>
+            <td>04</td><td>RSA Algorithm</td><td>Asymmetric</td><td>2048–4096 bit</td><td>Ciphertext</td>
+            <td style="color:var(--green)">Secure (large keys)</td>
+          </tr>
+          <tr>
+            <td>05</td><td>SHA-1 Hash</td><td>Hash Function</td><td>N/A</td><td>160-bit digest</td>
+            <td style="color:var(--yellow)">Deprecated</td>
+          </tr>
+          <tr>
+            <td>06</td><td>MD5 Hash</td><td>Hash Function</td><td>N/A</td><td>128-bit digest</td>
+            <td style="color:#e24b4a">Broken</td>
+          </tr>
+          <tr>
+            <td>07</td><td>Diffie-Hellman</td><td>Key Exchange</td><td>Discrete Log</td><td>Shared Secret</td>
+            <td style="color:var(--green)">Secure (DHE/ECDHE)</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

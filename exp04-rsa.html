@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exp 04 — RSA Algorithm | CryptoLab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">&#9632;</div>
+    CryptoLab Manual
+  </a>
+  <div class="header-badge">CS3472 — Network Security</div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <a href="index.html" class="nav-item"><span class="nav-num">&nbsp;</span> Overview</a>
+    <div class="sidebar-section">Classical Ciphers</div>
+    <a href="exp01-caesar.html" class="nav-item"><span class="nav-num">01</span> Caesar Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp02-hill.html" class="nav-item"><span class="nav-num">02</span> Hill Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp03-playfair.html" class="nav-item"><span class="nav-num">03</span> Playfair Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <div class="sidebar-section">Asymmetric &amp; Hash</div>
+    <a href="exp04-rsa.html" class="nav-item active"><span class="nav-num">04</span> RSA Algorithm <span class="nav-tag tag-modern">Modern</span></a>
+    <a href="exp05-sha1.html" class="nav-item"><span class="nav-num">05</span> SHA-1 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp06-md5.html" class="nav-item"><span class="nav-num">06</span> MD5 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp07-dh.html" class="nav-item"><span class="nav-num">07</span> Diffie-Hellman <span class="nav-tag tag-key">Key Exch</span></a>
+  </nav>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <span class="current">Experiment 04 — RSA Algorithm</span>
+    </div>
+
+    <div class="exp-header">
+      <div class="exp-label">Experiment 04 — Asymmetric Cryptography</div>
+      <div class="exp-title">RSA <span>Algorithm</span></div>
+      <div class="exp-desc">A public-key cryptosystem where encryption and decryption use different keys. Security is based on the practical difficulty of factoring the product of two large prime numbers.</div>
+      <div class="exp-tags">
+        <span class="etag">Asymmetric</span><span class="etag">Public-Key</span><span class="etag">Number Theory</span><span class="etag">Modular Exponentiation</span>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Aim</div>
+      <div class="info-card">
+        <div class="info-card-value">To implement RSA key generation, message encryption, and decryption; and to understand how public-key cryptography enables secure communication without shared secrets.</div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Key Generation Steps</div>
+      <ol class="algo-steps">
+        <li>Choose two distinct primes <em>p</em> and <em>q</em>. Compute <em>n = p × q</em></li>
+        <li>Compute Euler's totient: <em>φ(n) = (p−1)(q−1)</em></li>
+        <li>Choose public exponent <em>e</em> such that 1 &lt; e &lt; φ(n) and gcd(e, φ(n)) = 1</li>
+        <li>Compute private key <em>d</em> such that <em>e × d ≡ 1 (mod φ(n))</em></li>
+        <li>Public key: (e, n) — Private key: (d, n)</li>
+      </ol>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Formulas</div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">Encryption</div>
+          <div class="info-card-value" style="font-family:var(--mono);color:var(--accent);">C = M^e mod n</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Decryption</div>
+          <div class="info-card-value" style="font-family:var(--mono);color:var(--green);">M = C^d mod n</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Source Code</div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Python</span>
+          <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+        </div>
+        <pre><span class="kw">def</span> <span class="fn">g</span>(a, b):
+    <span class="kw">while</span> b: a, b = b, a % b
+    <span class="kw">return</span> a
+
+<span class="kw">def</span> <span class="fn">inv</span>(e, p):
+    <span class="kw">for</span> d <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, p):
+        <span class="kw">if</span> e * d % p == <span class="num">1</span>: <span class="kw">return</span> d
+
+<span class="kw">def</span> <span class="fn">keys</span>():
+    p = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"p: "</span>))
+    q = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"q: "</span>))
+    n = p * q; phi = (p - <span class="num">1</span>) * (q - <span class="num">1</span>)
+    e = <span class="num">2</span>
+    <span class="kw">while</span> <span class="fn">g</span>(e, phi) != <span class="num">1</span>: e += <span class="num">1</span>
+    <span class="kw">return</span> e, <span class="fn">inv</span>(e, phi), n
+
+e, d, n = <span class="fn">keys</span>()
+<span class="fn">print</span>(<span class="str">"Public:"</span>, (e, n))
+<span class="fn">print</span>(<span class="str">"Private:"</span>, (d, n))
+
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+c = [<span class="fn">pow</span>(<span class="fn">ord</span>(ch), e, n) <span class="kw">for</span> ch <span class="kw">in</span> t]
+<span class="fn">print</span>(<span class="str">"Encrypted:"</span>, c)
+<span class="fn">print</span>(<span class="str">"Decrypted:"</span>, <span class="str">''</span>.<span class="fn">join</span>(chr(<span class="fn">pow</span>(x, d, n)) <span class="kw">for</span> x <span class="kw">in</span> c))</pre>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Interactive Demo</div>
+      <div class="interact-panel">
+        <div class="interact-header">&#9654; RSA Key Generation &amp; Encryption</div>
+        <div class="interact-body">
+          <div class="input-row">
+            <div class="field"><label>Prime p</label><input type="number" id="rsa-p" value="61"></div>
+            <div class="field"><label>Prime q</label><input type="number" id="rsa-q" value="53"></div>
+            <div class="field" style="flex:2"><label>Message</label><input type="text" id="rsa-msg" value="Hi"></div>
+          </div>
+          <button class="run-btn" onclick="runRSA()">&#9654; Generate Keys &amp; Encrypt</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:1rem;">
+            <div class="output-box"><div class="output-label">n = p×q</div><div class="output-value" id="rsa-n">—</div></div>
+            <div class="output-box"><div class="output-label">Public key (e,n)</div><div class="output-value" id="rsa-pub">—</div></div>
+            <div class="output-box"><div class="output-label">Private key (d,n)</div><div class="output-value" id="rsa-priv">—</div></div>
+          </div>
+          <div class="output-row" style="margin-top:10px">
+            <div class="output-box"><div class="output-label">Encrypted (ASCII codes)</div><div class="output-value" id="rsa-enc">—</div></div>
+            <div class="output-box"><div class="output-label">Decrypted</div><div class="output-value" id="rsa-dec" style="color:var(--accent)">—</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Conclusion</div>
+      <div class="conclusion-box">
+        RSA enables <strong>secure key exchange and digital signatures</strong> without a pre-shared secret. Its security relies on the <strong>integer factorization problem</strong> — easy to multiply two primes, computationally infeasible to factor the product for large primes. In practice, RSA uses key sizes of <strong>2048–4096 bits</strong>. Quantum computers (Shor's algorithm) could theoretically break RSA, driving interest in post-quantum cryptography.
+      </div>
+    </div>
+
+    <div class="exp-nav">
+      <a href="exp03-playfair.html">&#8592; Exp 03: Playfair Cipher</a>
+      <a href="exp05-sha1.html" class="next">Exp 05: SHA-1 Hash &#8594;</a>
+    </div>
+  </main>
+</div>
+
+<script>
+function gcd(a, b) { while(b) { [a,b]=[b,a%b]; } return a; }
+function modInverse(e, phi) { for(let d=1;d<phi;d++) if((e*d)%phi===1) return d; return null; }
+function runRSA() {
+  const p = parseInt(document.getElementById('rsa-p').value);
+  const q = parseInt(document.getElementById('rsa-q').value);
+  const msg = document.getElementById('rsa-msg').value;
+  const n = p * q;
+  const phi = (p-1)*(q-1);
+  let e = 2;
+  while(gcd(e,phi)!==1) e++;
+  const d = modInverse(e, phi);
+  document.getElementById('rsa-n').textContent = n;
+  document.getElementById('rsa-pub').textContent = `(${e}, ${n})`;
+  document.getElementById('rsa-priv').textContent = `(${d}, ${n})`;
+  const enc = msg.split('').map(c => {
+    let base = c.charCodeAt(0), res = 1n;
+    let base_b = BigInt(base), e_b = BigInt(e), n_b = BigInt(n);
+    let tmp = base_b % n_b, exp = e_b;
+    while(exp > 0n) { if(exp % 2n === 1n) res = res * tmp % n_b; tmp = tmp * tmp % n_b; exp /= 2n; }
+    return res.toString();
+  });
+  document.getElementById('rsa-enc').textContent = enc.join(', ');
+  const dec = enc.map(ce => {
+    let c_b = BigInt(ce), d_b = BigInt(d), n_b = BigInt(n);
+    let res = 1n, base = c_b % n_b, exp = d_b;
+    while(exp > 0n) { if(exp % 2n === 1n) res = res * base % n_b; base = base * base % n_b; exp /= 2n; }
+    return String.fromCharCode(Number(res));
+  }).join('');
+  document.getElementById('rsa-dec').textContent = dec;
+}
+</script>
+</body>
+</html>

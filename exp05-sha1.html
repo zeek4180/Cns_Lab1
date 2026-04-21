@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exp 05 — SHA-1 Hash | CryptoLab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">&#9632;</div>
+    CryptoLab Manual
+  </a>
+  <div class="header-badge">CS3472 — Network Security</div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <a href="index.html" class="nav-item"><span class="nav-num">&nbsp;</span> Overview</a>
+    <div class="sidebar-section">Classical Ciphers</div>
+    <a href="exp01-caesar.html" class="nav-item"><span class="nav-num">01</span> Caesar Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp02-hill.html" class="nav-item"><span class="nav-num">02</span> Hill Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp03-playfair.html" class="nav-item"><span class="nav-num">03</span> Playfair Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <div class="sidebar-section">Asymmetric &amp; Hash</div>
+    <a href="exp04-rsa.html" class="nav-item"><span class="nav-num">04</span> RSA Algorithm <span class="nav-tag tag-modern">Modern</span></a>
+    <a href="exp05-sha1.html" class="nav-item active"><span class="nav-num">05</span> SHA-1 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp06-md5.html" class="nav-item"><span class="nav-num">06</span> MD5 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp07-dh.html" class="nav-item"><span class="nav-num">07</span> Diffie-Hellman <span class="nav-tag tag-key">Key Exch</span></a>
+  </nav>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <span class="current">Experiment 05 — SHA-1 Hash</span>
+    </div>
+
+    <div class="exp-header">
+      <div class="exp-label">Experiment 05 — Cryptographic Hash</div>
+      <div class="exp-title">SHA-1 <span>Hash Function</span></div>
+      <div class="exp-desc">SHA-1 (Secure Hash Algorithm 1) is a cryptographic hash function that produces a 160-bit (40 hex character) digest. Designed by the NSA and published by NIST in 1995.</div>
+      <div class="exp-tags">
+        <span class="etag">One-Way</span><span class="etag">160-bit Output</span><span class="etag">Merkle–Damgård</span><span class="etag">Deprecated</span>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Aim</div>
+      <div class="info-card">
+        <div class="info-card-value">To implement SHA-1 from scratch and understand message padding, compression rounds, and the properties of cryptographic hash functions including avalanche effect and collision resistance.</div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Hash Function Properties</div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">Deterministic</div>
+          <div class="info-card-value">Same input always produces the same hash output</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Avalanche Effect</div>
+          <div class="info-card-value">Single bit change alters approximately 50% of output bits</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Pre-image Resistance</div>
+          <div class="info-card-value">Computationally infeasible to find input given only the hash</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Output Size</div>
+          <div class="info-card-value">Always 160 bits = 20 bytes = 40 hex characters</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Algorithm Overview</div>
+      <ol class="algo-steps">
+        <li>Pad message: append 0x80, zero-pad until length ≡ 448 (mod 512), append 64-bit message length</li>
+        <li>Initialize five 32-bit hash values: H0–H4 with fixed constants</li>
+        <li>Process each 512-bit block: expand 16 words to 80 using XOR + left-rotate-1</li>
+        <li>Run 80 rounds using three functions (Ch, Parity, Maj) with four round constants</li>
+        <li>Update H0–H4 by adding the round outputs, producing the final 160-bit digest</li>
+      </ol>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Source Code</div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Python — SHA-1 Implementation</span>
+          <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+        </div>
+        <pre><span class="kw">def</span> <span class="fn">r</span>(n, b): <span class="kw">return</span> ((n &lt;&lt; b) | (n &gt;&gt; (<span class="num">32</span> - b))) &amp; <span class="num">0xffffffff</span>
+
+<span class="kw">def</span> <span class="fn">sha1</span>(m):
+    m = <span class="fn">bytearray</span>(m, <span class="str">'utf-8'</span>); l = <span class="fn">len</span>(m) * <span class="num">8</span>
+    m += b<span class="str">'\x80'</span>
+    <span class="kw">while</span> (<span class="fn">len</span>(m) * <span class="num">8</span>) % <span class="num">512</span> != <span class="num">448</span>: m += b<span class="str">'\x00'</span>
+    m += l.<span class="fn">to_bytes</span>(<span class="num">8</span>, <span class="str">'big'</span>)
+
+    h0,h1,h2,h3,h4 = <span class="num">0x67452301</span>,<span class="num">0xEFCDAB89</span>,<span class="num">0x98BADCFE</span>,<span class="num">0x10325476</span>,<span class="num">0xC3D2E1F0</span>
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="fn">len</span>(m), <span class="num">64</span>):
+        w = [<span class="fn">int</span>.<span class="fn">from_bytes</span>(m[i+j:i+j+<span class="num">4</span>], <span class="str">'big'</span>) <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="num">64</span>, <span class="num">4</span>)]
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="num">16</span>, <span class="num">80</span>): w.<span class="fn">append</span>(<span class="fn">r</span>(w[j-<span class="num">3</span>]^w[j-<span class="num">8</span>]^w[j-<span class="num">14</span>]^w[j-<span class="num">16</span>], <span class="num">1</span>))
+        a,b,c,d,e = h0,h1,h2,h3,h4
+
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="num">80</span>):
+            <span class="kw">if</span> j&lt;<span class="num">20</span>:   f=(b&amp;c)|(~b&amp;d); k=<span class="num">0x5A827999</span>
+            <span class="kw">elif</span> j&lt;<span class="num">40</span>: f=b^c^d;       k=<span class="num">0x6ED9EBA1</span>
+            <span class="kw">elif</span> j&lt;<span class="num">60</span>: f=(b&amp;c)|(b&amp;d)|(c&amp;d); k=<span class="num">0x8F1BBCDC</span>
+            <span class="kw">else</span>:       f=b^c^d;       k=<span class="num">0xCA62C1D6</span>
+            a,b,c,d,e = (<span class="fn">r</span>(a,<span class="num">5</span>)+f+e+k+w[j])&amp;<span class="num">0xffffffff</span>,a,<span class="fn">r</span>(b,<span class="num">30</span>),c,d
+
+        h0=(h0+a)&amp;<span class="num">0xffffffff</span>; h1=(h1+b)&amp;<span class="num">0xffffffff</span>
+        h2=(h2+c)&amp;<span class="num">0xffffffff</span>; h3=(h3+d)&amp;<span class="num">0xffffffff</span>
+        h4=(h4+e)&amp;<span class="num">0xffffffff</span>
+
+    <span class="kw">return</span> <span class="str">'%08x%08x%08x%08x%08x'</span> % (h0, h1, h2, h3, h4)
+
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+<span class="fn">print</span>(<span class="str">"SHA1:"</span>, <span class="fn">sha1</span>(t))</pre>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Interactive Demo</div>
+      <div class="interact-panel">
+        <div class="interact-header">&#9654; Compute SHA-1</div>
+        <div class="interact-body">
+          <div class="input-row">
+            <div class="field" style="flex:1"><label>Input Text</label><input type="text" id="sha-in" value="Hello World"></div>
+          </div>
+          <button class="run-btn" onclick="runSHA()">&#9654; Hash</button>
+          <div style="margin-top:1rem">
+            <div class="output-box" style="width:100%">
+              <div class="output-label">SHA-1 Digest (160-bit / 40 hex chars)</div>
+              <div class="output-value" id="sha-out" style="font-size:0.75rem;letter-spacing:0.05em">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Conclusion</div>
+      <div class="conclusion-box">
+        SHA-1 demonstrates core hash function properties: <strong>determinism</strong>, <strong>avalanche effect</strong> (single bit change alters ~50% of output bits), and <strong>pre-image resistance</strong>. However, SHA-1 is now <strong>cryptographically broken</strong> — Google demonstrated a practical collision attack (SHAttered, 2017). It has been deprecated for security use; <strong>SHA-256 or SHA-3</strong> are recommended for new systems.
+      </div>
+    </div>
+
+    <div class="exp-nav">
+      <a href="exp04-rsa.html">&#8592; Exp 04: RSA Algorithm</a>
+      <a href="exp06-md5.html" class="next">Exp 06: MD5 Hash &#8594;</a>
+    </div>
+  </main>
+</div>
+
+<script>
+async function digestMsg(msg, algo) {
+  const enc = new TextEncoder();
+  const data = enc.encode(msg);
+  const hash = await crypto.subtle.digest(algo, data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+async function runSHA() {
+  const t = document.getElementById('sha-in').value;
+  try {
+    const h = await digestMsg(t, 'SHA-1');
+    document.getElementById('sha-out').textContent = h;
+  } catch(e) {
+    document.getElementById('sha-out').textContent = 'SHA-1 not supported in this browser. Run the Python code above.';
+  }
+}
+</script>
+</body>
+</html>

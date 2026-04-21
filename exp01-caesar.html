@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exp 01 — Caesar Cipher | CryptoLab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">&#9632;</div>
+    CryptoLab Manual
+  </a>
+  <div class="header-badge">CS3472 — Network Security</div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <a href="index.html" class="nav-item"><span class="nav-num">&nbsp;</span> Overview</a>
+    <div class="sidebar-section">Classical Ciphers</div>
+    <a href="exp01-caesar.html" class="nav-item active"><span class="nav-num">01</span> Caesar Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp02-hill.html" class="nav-item"><span class="nav-num">02</span> Hill Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp03-playfair.html" class="nav-item"><span class="nav-num">03</span> Playfair Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <div class="sidebar-section">Asymmetric &amp; Hash</div>
+    <a href="exp04-rsa.html" class="nav-item"><span class="nav-num">04</span> RSA Algorithm <span class="nav-tag tag-modern">Modern</span></a>
+    <a href="exp05-sha1.html" class="nav-item"><span class="nav-num">05</span> SHA-1 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp06-md5.html" class="nav-item"><span class="nav-num">06</span> MD5 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp07-dh.html" class="nav-item"><span class="nav-num">07</span> Diffie-Hellman <span class="nav-tag tag-key">Key Exch</span></a>
+  </nav>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <span class="current">Experiment 01 — Caesar Cipher</span>
+    </div>
+
+    <div class="exp-header">
+      <div class="exp-label">Experiment 01 — Classical Cipher</div>
+      <div class="exp-title">Caesar <span>Cipher</span></div>
+      <div class="exp-desc">A substitution cipher in which each letter of the plaintext is replaced by a letter a fixed number of positions down the alphabet. Named after Julius Caesar, who used it in his private correspondence.</div>
+      <div class="exp-tags">
+        <span class="etag">Symmetric</span>
+        <span class="etag">Substitution</span>
+        <span class="etag">Monoalphabetic</span>
+        <span class="etag">O(n) Time</span>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Aim</div>
+      <div class="info-card">
+        <div class="info-card-value">To implement and demonstrate the Caesar Cipher encryption and decryption technique, and to understand the concept of substitution ciphers and their vulnerabilities to frequency analysis.</div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Objectives</div>
+      <ul class="obj-list">
+        <li><span class="obj-dot"></span>Understand the concept of shift-based substitution in classical cryptography</li>
+        <li><span class="obj-dot"></span>Implement both encryption and decryption using modular arithmetic</li>
+        <li><span class="obj-dot"></span>Analyze the cipher's vulnerability to brute-force attacks (only 25 possible keys)</li>
+        <li><span class="obj-dot"></span>Observe how case preservation is handled in implementation</li>
+      </ul>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Theory</div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">Encryption Formula</div>
+          <div class="info-card-value" style="font-family: var(--mono); color: var(--accent);">E(x) = (x + n) mod 26</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Decryption Formula</div>
+          <div class="info-card-value" style="font-family: var(--mono); color: var(--green);">D(x) = (x − n) mod 26</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Key Space</div>
+          <div class="info-card-value">26 possible shifts (0–25). Shift 0 = identity. Trivially broken by brute force.</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Historical Use</div>
+          <div class="info-card-value">Julius Caesar used shift 3. ROT13 (shift 13) is a modern symmetric variant.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Algorithm</div>
+      <ol class="algo-steps">
+        <li>Accept plaintext input and integer shift value <em>s</em> from the user</li>
+        <li>Reduce <em>s</em> modulo 26 to normalize (e.g., shift 27 → shift 1)</li>
+        <li>For each character: if uppercase, apply <code>(ord(c) − 65 + s) % 26 + 65</code></li>
+        <li>If lowercase, apply <code>(ord(c) − 97 + s) % 26 + 97</code>; non-alpha chars pass unchanged</li>
+        <li>Concatenate transformed characters to produce ciphertext</li>
+        <li>To decrypt, apply the same function with shift <code>−s</code> (or equivalently <code>26 − s</code>)</li>
+      </ol>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Source Code</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">Python</span>
+          <div class="code-dots">
+            <div class="code-dot" style="background:#ff5f57"></div>
+            <div class="code-dot" style="background:#ffbd2e"></div>
+            <div class="code-dot" style="background:#28c940"></div>
+          </div>
+        </div>
+        <pre><span class="kw">def</span> <span class="fn">c</span>(t, s):
+    <span class="kw">return</span> <span class="str">''</span>.join(
+        chr((<span class="fn">ord</span>(x) - <span class="num">65</span> + s) % <span class="num">26</span> + <span class="num">65</span>) <span class="kw">if</span> x.isupper() <span class="kw">else</span>
+        chr((<span class="fn">ord</span>(x) - <span class="num">97</span> + s) % <span class="num">26</span> + <span class="num">97</span>) <span class="kw">if</span> x.islower() <span class="kw">else</span> x
+        <span class="kw">for</span> x <span class="kw">in</span> t
+    )
+
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+s = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Shift: "</span>)) % <span class="num">26</span>
+e = <span class="fn">c</span>(t, s)
+
+<span class="fn">print</span>(<span class="str">"Encoded:"</span>, e)
+<span class="fn">print</span>(<span class="str">"Decoded:"</span>, <span class="fn">c</span>(e, -s))</pre>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Interactive Demo</div>
+      <div class="interact-panel">
+        <div class="interact-header">&#9654; Run Caesar Cipher</div>
+        <div class="interact-body">
+          <div class="input-row">
+            <div class="field" style="flex:3">
+              <label>Plaintext</label>
+              <input type="text" id="c-text" value="Hello World" placeholder="Enter text...">
+            </div>
+            <div class="field" style="flex:1">
+              <label>Shift (n)</label>
+              <input type="number" id="c-shift" value="3" min="0" max="25">
+            </div>
+          </div>
+          <button class="run-btn" onclick="runCaesar()">&#9654; Encrypt / Decrypt</button>
+          <div class="output-row">
+            <div class="output-box">
+              <div class="output-label">Encrypted</div>
+              <div class="output-value" id="c-enc">—</div>
+            </div>
+            <div class="output-box">
+              <div class="output-label">Decrypted back</div>
+              <div class="output-value" id="c-dec" style="color:var(--accent)">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Sample Output</div>
+      <div class="interact-panel">
+        <table class="result-table">
+          <tr><th>Plaintext</th><th>Shift</th><th>Ciphertext</th><th>Decrypted</th></tr>
+          <tr><td>HELLO</td><td>3</td><td>KHOOR</td><td>HELLO</td></tr>
+          <tr><td>Attack at dawn</td><td>13</td><td>Nggnpx ng qnja</td><td>Attack at dawn</td></tr>
+          <tr><td>Python 3.11</td><td>7</td><td>Wfaovu 3.11</td><td>Python 3.11</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Conclusion</div>
+      <div class="conclusion-box">
+        The Caesar Cipher demonstrates the fundamental concept of <strong>substitution encryption</strong>. While historically significant, it is trivially broken by <strong>brute-force</strong> (only 25 non-trivial keys) or <strong>frequency analysis</strong> (letter frequency in ciphertext matches natural language). It serves as the basis for understanding more complex polyalphabetic and transposition ciphers.
+      </div>
+    </div>
+
+    <div class="exp-nav">
+      <a href="index.html">&#8592; Home</a>
+      <a href="exp02-hill.html" class="next">Experiment 02: Hill Cipher &#8594;</a>
+    </div>
+  </main>
+</div>
+
+<script>
+function caesarChar(ch, shift) {
+  if (ch >= 65 && ch <= 90) return String.fromCharCode(((ch - 65 + shift) % 26 + 26) % 26 + 65);
+  if (ch >= 97 && ch <= 122) return String.fromCharCode(((ch - 97 + shift) % 26 + 26) % 26 + 97);
+  return String.fromCharCode(ch);
+}
+function runCaesar() {
+  const t = document.getElementById('c-text').value;
+  const s = parseInt(document.getElementById('c-shift').value) % 26;
+  const enc = t.split('').map(c => caesarChar(c.charCodeAt(0), s)).join('');
+  const dec = enc.split('').map(c => caesarChar(c.charCodeAt(0), -s)).join('');
+  document.getElementById('c-enc').textContent = enc;
+  document.getElementById('c-dec').textContent = dec;
+}
+</script>
+</body>
+</html>

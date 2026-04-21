@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exp 03 — Playfair Cipher | CryptoLab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">&#9632;</div>
+    CryptoLab Manual
+  </a>
+  <div class="header-badge">CS3472 — Network Security</div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <a href="index.html" class="nav-item"><span class="nav-num">&nbsp;</span> Overview</a>
+    <div class="sidebar-section">Classical Ciphers</div>
+    <a href="exp01-caesar.html" class="nav-item"><span class="nav-num">01</span> Caesar Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp02-hill.html" class="nav-item"><span class="nav-num">02</span> Hill Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp03-playfair.html" class="nav-item active"><span class="nav-num">03</span> Playfair Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <div class="sidebar-section">Asymmetric &amp; Hash</div>
+    <a href="exp04-rsa.html" class="nav-item"><span class="nav-num">04</span> RSA Algorithm <span class="nav-tag tag-modern">Modern</span></a>
+    <a href="exp05-sha1.html" class="nav-item"><span class="nav-num">05</span> SHA-1 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp06-md5.html" class="nav-item"><span class="nav-num">06</span> MD5 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp07-dh.html" class="nav-item"><span class="nav-num">07</span> Diffie-Hellman <span class="nav-tag tag-key">Key Exch</span></a>
+  </nav>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <span class="current">Experiment 03 — Playfair Cipher</span>
+    </div>
+
+    <div class="exp-header">
+      <div class="exp-label">Experiment 03 — Classical Cipher</div>
+      <div class="exp-title">Playfair <span>Cipher</span></div>
+      <div class="exp-desc">A digraph substitution cipher that encrypts pairs of letters using a 5×5 key square. It was the first practical digraph substitution cipher, used by the British military in both World Wars.</div>
+      <div class="exp-tags">
+        <span class="etag">Symmetric</span><span class="etag">Digraph</span><span class="etag">5×5 Key Square</span><span class="etag">I/J Combined</span>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Aim</div>
+      <div class="info-card">
+        <div class="info-card-value">To implement the Playfair Cipher and understand digraph substitution, key square construction, and the three rules governing encryption of letter pairs.</div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Theory — 3 Encryption Rules</div>
+      <ol class="algo-steps">
+        <li><strong>Same Row:</strong> Each letter replaced by letter immediately to its right (wrapping)</li>
+        <li><strong>Same Column:</strong> Each letter replaced by letter immediately below (wrapping)</li>
+        <li><strong>Rectangle:</strong> Each letter replaced by letter on same row but in the column of the other</li>
+      </ol>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Key Square Construction</div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">Size</div>
+          <div class="info-card-value">5×5 grid using 25 letters (I and J are combined into one cell)</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">How to Build</div>
+          <div class="info-card-value">Write the keyword first (no repeats), then fill remaining alphabet letters in order</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Digraph Prep</div>
+          <div class="info-card-value">Split plaintext into pairs. Insert 'X' between double letters. Pad odd-length text with 'X'</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">J/I Rule</div>
+          <div class="info-card-value">All J's in plaintext are treated as I's to fit 25 letters in the 5×5 grid</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Source Code</div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Python</span>
+          <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+        </div>
+        <pre><span class="kw">def</span> <span class="fn">sq</span>(k):
+    k = <span class="str">""</span>.<span class="fn">join</span>(c <span class="kw">for</span> c <span class="kw">in</span> k.<span class="fn">upper</span>() <span class="kw">if</span> c.<span class="fn">isalpha</span>()).<span class="fn">replace</span>(<span class="str">"J"</span>, <span class="str">"I"</span>)
+    s = []
+    <span class="kw">for</span> c <span class="kw">in</span> k + <span class="str">"ABCDEFGHIKLMNOPQRSTUVWXYZ"</span>:
+        <span class="kw">if</span> c <span class="kw">not in</span> s: s.<span class="fn">append</span>(c)
+    <span class="kw">return</span> [s[i:i+<span class="num">5</span>] <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="num">25</span>, <span class="num">5</span>)]
+
+<span class="kw">def</span> <span class="fn">pos</span>(s, c):
+    <span class="kw">for</span> r, row <span class="kw">in</span> <span class="fn">enumerate</span>(s):
+        <span class="kw">if</span> c <span class="kw">in</span> row: <span class="kw">return</span> r, row.<span class="fn">index</span>(c)
+
+<span class="kw">def</span> <span class="fn">prep</span>(t):
+    t = t.<span class="fn">upper</span>().<span class="fn">replace</span>(<span class="str">"J"</span>, <span class="str">"I"</span>).<span class="fn">replace</span>(<span class="str">" "</span>, <span class="str">""</span>)
+    i = <span class="num">0</span>; pairs = []
+    <span class="kw">while</span> i < <span class="fn">len</span>(t):
+        a = t[i]
+        b = t[i+<span class="num">1</span>] <span class="kw">if</span> i+<span class="num">1</span> < <span class="fn">len</span>(t) <span class="kw">else</span> <span class="str">'X'</span>
+        <span class="kw">if</span> a == b: b = <span class="str">'X'</span>; i += <span class="num">1</span>
+        <span class="kw">else</span>: i += <span class="num">2</span>
+        pairs.<span class="fn">append</span>((a, b))
+    <span class="kw">return</span> pairs
+
+<span class="kw">def</span> <span class="fn">play</span>(t, k, d=<span class="num">0</span>):
+    s = <span class="fn">sq</span>(k)
+    p = <span class="fn">prep</span>(t) <span class="kw">if not</span> d <span class="kw">else</span> [t[i:i+<span class="num">2</span>] <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="fn">len</span>(t), <span class="num">2</span>)]
+    r = <span class="str">""</span>
+    <span class="kw">for</span> a, b <span class="kw">in</span> p:
+        ra, ca = <span class="fn">pos</span>(s, a); rb, cb = <span class="fn">pos</span>(s, b)
+        <span class="kw">if</span> ra == rb:
+            r += s[ra][(ca + (-<span class="num">1</span> <span class="kw">if</span> d <span class="kw">else</span> <span class="num">1</span>)) % <span class="num">5</span>] + s[rb][(cb + (-<span class="num">1</span> <span class="kw">if</span> d <span class="kw">else</span> <span class="num">1</span>)) % <span class="num">5</span>]
+        <span class="kw">elif</span> ca == cb:
+            r += s[(ra + (-<span class="num">1</span> <span class="kw">if</span> d <span class="kw">else</span> <span class="num">1</span>)) % <span class="num">5</span>][ca] + s[(rb + (-<span class="num">1</span> <span class="kw">if</span> d <span class="kw">else</span> <span class="num">1</span>)) % <span class="num">5</span>][cb]
+        <span class="kw">else</span>:
+            r += s[ra][cb] + s[rb][ca]
+    <span class="kw">return</span> r
+
+k = <span class="str">"PLAYFAIR EXAMPLE"</span>
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+e = <span class="fn">play</span>(t, k)
+<span class="fn">print</span>(<span class="str">"Encoded:"</span>, e)
+<span class="fn">print</span>(<span class="str">"Decoded:"</span>, <span class="fn">play</span>(e, k, <span class="num">1</span>))</pre>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Sample Output</div>
+      <div class="interact-panel">
+        <table class="result-table">
+          <tr><th>Plaintext</th><th>Key</th><th>Ciphertext</th></tr>
+          <tr><td>HELLO</td><td>PLAYFAIR EXAMPLE</td><td>DMYRAN (approx)</td></tr>
+          <tr><td>HIDE THE GOLD</td><td>PLAYFAIR EXAMPLE</td><td>BMNDZBXDKIBA</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Conclusion</div>
+      <div class="conclusion-box">
+        Playfair is significantly stronger than monoalphabetic ciphers as it encrypts <strong>digraphs</strong> (letter pairs), making simple frequency analysis ineffective. There are 676 possible digraphs vs 26 letters. However, the <strong>25-letter key square</strong> is reconstructible from known plaintext, and modern computers can break it through <strong>hill-climbing</strong> optimization.
+      </div>
+    </div>
+
+    <div class="exp-nav">
+      <a href="exp02-hill.html">&#8592; Exp 02: Hill Cipher</a>
+      <a href="exp04-rsa.html" class="next">Exp 04: RSA Algorithm &#8594;</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

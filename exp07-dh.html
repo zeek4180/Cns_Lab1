@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exp 07 — Diffie-Hellman | CryptoLab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">&#9632;</div>
+    CryptoLab Manual
+  </a>
+  <div class="header-badge">CS3472 — Network Security</div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <a href="index.html" class="nav-item"><span class="nav-num">&nbsp;</span> Overview</a>
+    <div class="sidebar-section">Classical Ciphers</div>
+    <a href="exp01-caesar.html" class="nav-item"><span class="nav-num">01</span> Caesar Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp02-hill.html" class="nav-item"><span class="nav-num">02</span> Hill Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp03-playfair.html" class="nav-item"><span class="nav-num">03</span> Playfair Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <div class="sidebar-section">Asymmetric &amp; Hash</div>
+    <a href="exp04-rsa.html" class="nav-item"><span class="nav-num">04</span> RSA Algorithm <span class="nav-tag tag-modern">Modern</span></a>
+    <a href="exp05-sha1.html" class="nav-item"><span class="nav-num">05</span> SHA-1 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp06-md5.html" class="nav-item"><span class="nav-num">06</span> MD5 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp07-dh.html" class="nav-item active"><span class="nav-num">07</span> Diffie-Hellman <span class="nav-tag tag-key">Key Exch</span></a>
+  </nav>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <span class="current">Experiment 07 — Diffie-Hellman Key Exchange</span>
+    </div>
+
+    <div class="exp-header">
+      <div class="exp-label">Experiment 07 — Key Exchange</div>
+      <div class="exp-title">Diffie-Hellman <span>Key Exchange</span></div>
+      <div class="exp-desc">A method for two parties to establish a shared secret over an insecure channel without prior communication. Introduced by Whitfield Diffie and Martin Hellman in 1976 — the first public-key protocol.</div>
+      <div class="exp-tags">
+        <span class="etag">Key Exchange</span><span class="etag">Discrete Log</span><span class="etag">Public Channel</span><span class="etag">No Pre-shared Secret</span>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Aim</div>
+      <div class="info-card">
+        <div class="info-card-value">To implement the Diffie-Hellman key exchange protocol and demonstrate how two parties can independently compute an identical shared secret without ever transmitting it.</div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Mathematical Foundation</div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">Public Parameters</div>
+          <div class="info-card-value" style="font-family:var(--mono);color:var(--accent);">Large prime p, generator g</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Security Basis</div>
+          <div class="info-card-value">Discrete Logarithm Problem: easy to compute g^a mod p, infeasible to reverse</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Alice's Computation</div>
+          <div class="info-card-value" style="font-family:var(--mono);color:var(--green);">A = g^a mod p &nbsp;→&nbsp; S = B^a mod p</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Bob's Computation</div>
+          <div class="info-card-value" style="font-family:var(--mono);color:var(--green);">B = g^b mod p &nbsp;→&nbsp; S = A^b mod p</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Protocol Steps</div>
+      <ol class="algo-steps">
+        <li>Agree publicly on a large prime <em>p</em> and generator <em>g</em> (primitive root mod p)</li>
+        <li>Alice selects private key <em>a</em>, computes public value A = g^a mod p</li>
+        <li>Bob selects private key <em>b</em>, computes public value B = g^b mod p</li>
+        <li>Both A and B are exchanged over the public channel</li>
+        <li>Alice computes shared secret: S = B^a mod p</li>
+        <li>Bob computes shared secret: S = A^b mod p — both arrive at identical S</li>
+      </ol>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Source Code</div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Python</span>
+          <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+        </div>
+        <pre>p = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"P: "</span>))
+g = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"G: "</span>))
+a = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Alice key: "</span>))
+b = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Bob key: "</span>))
+
+A = <span class="fn">pow</span>(g, a, p)   <span class="cm"># Alice's public value</span>
+B = <span class="fn">pow</span>(g, b, p)   <span class="cm"># Bob's public value</span>
+
+<span class="fn">print</span>(<span class="str">"Public:"</span>, A, B)
+
+s1 = <span class="fn">pow</span>(B, a, p)  <span class="cm"># Alice computes shared secret</span>
+s2 = <span class="fn">pow</span>(A, b, p)  <span class="cm"># Bob computes shared secret</span>
+
+<span class="fn">print</span>(<span class="str">"Secret:"</span>, s1, s2)
+<span class="fn">print</span>(<span class="str">"Success!"</span> <span class="kw">if</span> s1 == s2 <span class="kw">else</span> <span class="str">"Failed"</span>)</pre>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Interactive Demo</div>
+      <div class="interact-panel">
+        <div class="interact-header">&#9654; Diffie-Hellman Simulation</div>
+        <div class="interact-body">
+          <div class="input-row">
+            <div class="field"><label>Prime p</label><input type="number" id="dh-p" value="23"></div>
+            <div class="field"><label>Generator g</label><input type="number" id="dh-g" value="5"></div>
+            <div class="field"><label>Alice's private a</label><input type="number" id="dh-a" value="6"></div>
+            <div class="field"><label>Bob's private b</label><input type="number" id="dh-b" value="15"></div>
+          </div>
+          <button class="run-btn" onclick="runDH()">&#9654; Exchange Keys</button>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:1rem;">
+            <div class="output-box"><div class="output-label">Alice Public A</div><div class="output-value" id="dh-A">—</div></div>
+            <div class="output-box"><div class="output-label">Bob Public B</div><div class="output-value" id="dh-B">—</div></div>
+            <div class="output-box"><div class="output-label">Alice's Secret</div><div class="output-value" id="dh-s1">—</div></div>
+            <div class="output-box"><div class="output-label">Bob's Secret</div><div class="output-value" id="dh-s2" style="color:var(--accent)">—</div></div>
+          </div>
+          <div style="margin-top:10px;font-family:var(--mono);font-size:0.8rem" id="dh-result"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Conclusion</div>
+      <div class="conclusion-box">
+        Diffie-Hellman solves the <strong>key distribution problem</strong> elegantly: a shared secret can be established over a public channel. Security relies on the <strong>Discrete Logarithm Problem</strong> — easy to compute g^a mod p, computationally infeasible to recover <em>a</em> from A and p for large primes. DH is vulnerable to <strong>man-in-the-middle attacks</strong> without authentication; this is addressed in authenticated variants like <strong>DHE within TLS</strong>.
+      </div>
+    </div>
+
+    <div class="exp-nav">
+      <a href="exp06-md5.html">&#8592; Exp 06: MD5 Hash</a>
+      <a href="index.html" class="next">&#8962; Back to Home</a>
+    </div>
+  </main>
+</div>
+
+<script>
+function runDH() {
+  const p = parseInt(document.getElementById('dh-p').value);
+  const g = parseInt(document.getElementById('dh-g').value);
+  const a = parseInt(document.getElementById('dh-a').value);
+  const b = parseInt(document.getElementById('dh-b').value);
+  function modpow(base, exp, mod) {
+    let result = 1n;
+    let b_ = BigInt(base) % BigInt(mod);
+    let e_ = BigInt(exp);
+    let m_ = BigInt(mod);
+    while(e_ > 0n) { if(e_ % 2n === 1n) result = result * b_ % m_; b_ = b_ * b_ % m_; e_ /= 2n; }
+    return Number(result);
+  }
+  const A = modpow(g, a, p);
+  const B = modpow(g, b, p);
+  const s1 = modpow(B, a, p);
+  const s2 = modpow(A, b, p);
+  document.getElementById('dh-A').textContent = A;
+  document.getElementById('dh-B').textContent = B;
+  document.getElementById('dh-s1').textContent = s1;
+  document.getElementById('dh-s2').textContent = s2;
+  const res = document.getElementById('dh-result');
+  if(s1 === s2) {
+    res.innerHTML = '<span style="color:var(--green)">&#10003; Key exchange successful! Shared secret: ' + s1 + '</span>';
+  } else {
+    res.innerHTML = '<span style="color:#e24b4a">&#10007; Key mismatch — check parameters</span>';
+  }
+}
+</script>
+</body>
+</html>

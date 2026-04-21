@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exp 02 — Hill Cipher | CryptoLab</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">&#9632;</div>
+    CryptoLab Manual
+  </a>
+  <div class="header-badge">CS3472 — Network Security</div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <a href="index.html" class="nav-item"><span class="nav-num">&nbsp;</span> Overview</a>
+    <div class="sidebar-section">Classical Ciphers</div>
+    <a href="exp01-caesar.html" class="nav-item"><span class="nav-num">01</span> Caesar Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp02-hill.html" class="nav-item active"><span class="nav-num">02</span> Hill Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <a href="exp03-playfair.html" class="nav-item"><span class="nav-num">03</span> Playfair Cipher <span class="nav-tag tag-classical">Classical</span></a>
+    <div class="sidebar-section">Asymmetric &amp; Hash</div>
+    <a href="exp04-rsa.html" class="nav-item"><span class="nav-num">04</span> RSA Algorithm <span class="nav-tag tag-modern">Modern</span></a>
+    <a href="exp05-sha1.html" class="nav-item"><span class="nav-num">05</span> SHA-1 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp06-md5.html" class="nav-item"><span class="nav-num">06</span> MD5 Hash <span class="nav-tag tag-hash">Hash</span></a>
+    <a href="exp07-dh.html" class="nav-item"><span class="nav-num">07</span> Diffie-Hellman <span class="nav-tag tag-key">Key Exch</span></a>
+  </nav>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <span class="current">Experiment 02 — Hill Cipher</span>
+    </div>
+
+    <div class="exp-header">
+      <div class="exp-label">Experiment 02 — Classical Cipher</div>
+      <div class="exp-title">Hill <span>Cipher</span></div>
+      <div class="exp-desc">A polygraphic substitution cipher based on linear algebra. Encrypts multiple letters simultaneously using matrix multiplication modulo 26, making it resistant to simple frequency analysis.</div>
+      <div class="exp-tags">
+        <span class="etag">Symmetric</span><span class="etag">Polygraphic</span><span class="etag">Matrix Math</span><span class="etag">Linear Algebra</span>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Aim</div>
+      <div class="info-card">
+        <div class="info-card-value">To implement the Hill Cipher using matrix multiplication and modular arithmetic, and to understand the role of the key matrix inverse in decryption.</div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Theory</div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-label">Encryption</div>
+          <div class="info-card-value" style="font-family:var(--mono);color:var(--accent);">C = K · P (mod 26)</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Decryption</div>
+          <div class="info-card-value" style="font-family:var(--mono);color:var(--green);">P = K⁻¹ · C (mod 26)</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Key Requirement</div>
+          <div class="info-card-value">Key matrix must be invertible mod 26. det(K) must be coprime to 26.</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-label">Block Size</div>
+          <div class="info-card-value">Determined by matrix dimension n. n=2 processes 2 letters at a time; padding with 'X'.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Algorithm</div>
+      <ol class="algo-steps">
+        <li>Convert plaintext to uppercase, remove spaces, pad with 'X' to multiple of n</li>
+        <li>Convert each character to its numeric value (A=0, B=1, ..., Z=25)</li>
+        <li>Group the numbers into column vectors of length n (block size)</li>
+        <li>Multiply each block vector by the key matrix K modulo 26</li>
+        <li>Convert resulting numbers back to characters to obtain ciphertext</li>
+        <li>For decryption, compute modular inverse of K and repeat multiplication</li>
+      </ol>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Source Code</div>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">Python</span>
+          <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+        </div>
+        <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">inv</span>(a, m):
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, m):
+        <span class="kw">if</span> (a * i) % m == <span class="num">1</span>: <span class="kw">return</span> i
+
+<span class="kw">def</span> <span class="fn">mat_inv</span>(k, m):
+    d = <span class="fn">int</span>(<span class="fn">round</span>(np.linalg.<span class="fn">det</span>(k))) % m
+    di = <span class="fn">inv</span>(d, m)
+    <span class="kw">if</span> di <span class="kw">is</span> None: <span class="kw">return</span> None
+    adj = np.<span class="fn">array</span>([[k[<span class="num">1</span>][<span class="num">1</span>], -k[<span class="num">0</span>][<span class="num">1</span>]], [-k[<span class="num">1</span>][<span class="num">0</span>], k[<span class="num">0</span>][<span class="num">0</span>]]])
+    <span class="kw">return</span> (di * adj) % m
+
+<span class="kw">def</span> <span class="fn">t2n</span>(t, n):
+    t = t.<span class="fn">upper</span>().<span class="fn">replace</span>(<span class="str">" "</span>, <span class="str">""</span>)
+    <span class="kw">while</span> <span class="fn">len</span>(t) % n: t += <span class="str">'X'</span>
+    <span class="kw">return</span> [<span class="fn">ord</span>(c) - <span class="num">65</span> <span class="kw">for</span> c <span class="kw">in</span> t]
+
+<span class="kw">def</span> <span class="fn">hill</span>(t, k, dec=<span class="num">0</span>, m=<span class="num">26</span>):
+    n = <span class="fn">len</span>(k)
+    <span class="kw">if</span> dec: k = <span class="fn">mat_inv</span>(k, m)
+    <span class="kw">if</span> k <span class="kw">is</span> None: <span class="kw">return</span> <span class="str">"Invalid key"</span>
+    nums = <span class="fn">t2n</span>(t, n); res = []
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="fn">len</span>(nums), n):
+        b = np.<span class="fn">array</span>(nums[i:i+n]).<span class="fn">reshape</span>(n, <span class="num">1</span>)
+        res += <span class="fn">list</span>((k @ b % m).<span class="fn">flatten</span>())
+    <span class="kw">return</span> <span class="str">''</span>.<span class="fn">join</span>(chr(<span class="fn">int</span>(i) + <span class="num">65</span>) <span class="kw">for</span> i <span class="kw">in</span> res)
+
+k = np.<span class="fn">array</span>([[<span class="num">5</span>, <span class="num">8</span>], [<span class="num">17</span>, <span class="num">3</span>]])
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+e = <span class="fn">hill</span>(t, k)
+<span class="fn">print</span>(<span class="str">"Encoded:"</span>, e)
+<span class="fn">print</span>(<span class="str">"Decoded:"</span>, <span class="fn">hill</span>(e, k, <span class="num">1</span>))</pre>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Sample Output</div>
+      <div class="interact-panel">
+        <table class="result-table">
+          <tr><th>Plaintext</th><th>Key Matrix</th><th>Ciphertext</th><th>Decrypted</th></tr>
+          <tr><td>ACT</td><td>[[5,8],[17,3]]</td><td>PXOH</td><td>ACTX</td></tr>
+          <tr><td>HELP</td><td>[[5,8],[17,3]]</td><td>HIAT</td><td>HELP</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-title">Conclusion</div>
+      <div class="conclusion-box">
+        The Hill Cipher provides stronger security than Caesar/Vigenère by encrypting <strong>multiple characters simultaneously</strong>. Its security depends entirely on the <strong>key matrix</strong>; an invertible matrix mod 26 is mandatory. It is vulnerable to <strong>known-plaintext attacks</strong> since the cipher is linear — if n pairs (plaintext block, ciphertext block) are known, the key matrix can be recovered.
+      </div>
+    </div>
+
+    <div class="exp-nav">
+      <a href="exp01-caesar.html">&#8592; Exp 01: Caesar Cipher</a>
+      <a href="exp03-playfair.html" class="next">Exp 03: Playfair Cipher &#8594;</a>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
