@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cryptography Lab Manual</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --bg2: #111620;
+    --bg3: #161d2a;
+    --border: #1e2d42;
+    --accent: #00e5ff;
+    --accent2: #7b5ea7;
+    --accent3: #ff6b35;
+    --text: #e2eaf5;
+    --muted: #5a7a9a;
+    --green: #00d084;
+    --yellow: #ffd700;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+  .logo {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg);
+    font-size: 14px;
+    font-weight: 800;
+  }
+  .header-badge {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  .sidebar-section {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.6rem 1.5rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #8aa4c0;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { border-left-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.05); }
+  .nav-num {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    width: 20px;
+  }
+  .nav-tag {
+    margin-left: auto;
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-weight: 700;
+  }
+  .tag-classical { background: rgba(123,94,167,0.2); color: #a98ecf; }
+  .tag-modern { background: rgba(0,208,132,0.15); color: var(--green); }
+  .tag-hash { background: rgba(255,215,0,0.15); color: var(--yellow); }
+  .tag-key { background: rgba(255,107,53,0.15); color: var(--accent3); }
+
+  /* MAIN CONTENT */
+  main {
+    padding: 2.5rem 3rem;
+    max-width: 900px;
+  }
+
+  /* EXPERIMENT SECTION */
+  .experiment { display: none; }
+  .experiment.visible { display: block; }
+
+  /* EXPERIMENT HEADER */
+  .exp-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .exp-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .exp-title {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+  }
+  .exp-title span { color: var(--accent); }
+  .exp-desc {
+    font-size: 0.95rem;
+    color: #8aa4c0;
+    line-height: 1.7;
+    max-width: 680px;
+  }
+  .exp-tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  .etag {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    padding: 4px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  /* SECTION BLOCKS */
+  .section-block {
+    margin-bottom: 2rem;
+  }
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* INFO BLOCKS */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .info-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+  }
+  .info-card-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .info-card-value {
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* OBJECTIVE LIST */
+  .obj-list { list-style: none; }
+  .obj-list li {
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    color: #8aa4c0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border-bottom: 1px solid rgba(30,45,66,0.5);
+  }
+  .obj-list li:last-child { border-bottom: none; }
+  .obj-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  /* ALGORITHM STEPS */
+  .algo-steps { list-style: none; counter-reset: step; }
+  .algo-steps li {
+    counter-increment: step;
+    padding: 0.75rem 0 0.75rem 2.5rem;
+    position: relative;
+    font-size: 0.88rem;
+    color: #8aa4c0;
+    border-left: 1px solid var(--border);
+    margin-left: 1rem;
+    line-height: 1.6;
+  }
+  .algo-steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: -14px;
+    top: 0.75rem;
+    width: 26px; height: 26px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+  }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #07090d;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .code-header {
+    background: var(--bg3);
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .code-lang {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .code-dots { display: flex; gap: 6px; }
+  .code-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  pre {
+    padding: 1.25rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: #c9d9eb;
+  }
+  .kw { color: #7b5ea7; }
+  .fn { color: #00e5ff; }
+  .str { color: #00d084; }
+  .cm { color: #3a5470; font-style: italic; }
+  .num { color: #ffd700; }
+  .op { color: #ff6b35; }
+
+  /* INTERACTIVE PANEL */
+  .interact-panel {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .interact-header {
+    background: var(--bg2);
+    padding: 0.8rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .interact-body { padding: 1.25rem; }
+  .input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 140px;
+  }
+  label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  input[type="text"], input[type="number"], textarea {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 60px; }
+  .run-btn {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 6px;
+    padding: 0.55rem 1.5rem;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: opacity 0.15s;
+    margin-top: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .run-btn:hover { opacity: 0.85; }
+  .output-row {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .output-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+  }
+  .output-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .output-value {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--green);
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  /* RESULT TABLE */
+  .result-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .result-table th {
+    background: var(--bg2);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .result-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(30,45,66,0.5);
+    font-family: var(--mono);
+    color: #8aa4c0;
+  }
+  .result-table td:first-child { color: var(--text); }
+
+  /* CONCLUSION */
+  .conclusion-box {
+    background: rgba(0,229,255,0.04);
+    border: 1px solid rgba(0,229,255,0.15);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    font-size: 0.88rem;
+    color: #8aa4c0;
+    line-height: 1.7;
+  }
+  .conclusion-box strong { color: var(--accent); font-weight: 600; }
+
+  /* HOME PANEL */
+  .home-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .home-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .home-card:hover { border-color: var(--accent); background: rgba(0,229,255,0.03); }
+  .home-card-num {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .home-card-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .home-card-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .home-card-badge {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.65rem;
+    font-family: var(--mono);
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    main { padding: 1.5rem; }
+    .info-grid, .output-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">&#9632;</div>
+    CryptoLab Manual
+  </div>
+  <div class="header-badge">CS3472 — Network Security</div>
+</header>
+
+<div class="layout">
+
+  <nav class="sidebar">
+    <div class="sidebar-section">Navigation</div>
+    <div class="nav-item active" onclick="show('home')">
+      <span class="nav-num">&nbsp;</span> Overview
+    </div>
+
+    <div class="sidebar-section">Classical Ciphers</div>
+    <div class="nav-item" onclick="show('caesar')">
+      <span class="nav-num">01</span> Caesar Cipher <span class="nav-tag tag-classical">Classical</span>
+    </div>
+    <div class="nav-item" onclick="show('hill')">
+      <span class="nav-num">02</span> Hill Cipher <span class="nav-tag tag-classical">Classical</span>
+    </div>
+    <div class="nav-item" onclick="show('playfair')">
+      <span class="nav-num">03</span> Playfair Cipher <span class="nav-tag tag-classical">Classical</span>
+    </div>
+
+    <div class="sidebar-section">Asymmetric & Hash</div>
+    <div class="nav-item" onclick="show('rsa')">
+      <span class="nav-num">04</span> RSA Algorithm <span class="nav-tag tag-modern">Modern</span>
+    </div>
+    <div class="nav-item" onclick="show('sha')">
+      <span class="nav-num">05</span> SHA-1 Hash <span class="nav-tag tag-hash">Hash</span>
+    </div>
+    <div class="nav-item" onclick="show('md5')">
+      <span class="nav-num">06</span> MD5 Hash <span class="nav-tag tag-hash">Hash</span>
+    </div>
+    <div class="nav-item" onclick="show('dh')">
+      <span class="nav-num">07</span> Diffie-Hellman <span class="nav-tag tag-key">Key Exch</span>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- HOME -->
+    <div id="home" class="experiment visible">
+      <div class="exp-header">
+        <div class="exp-label">CS3472 — Network Security Lab Manual</div>
+        <div class="exp-title">Cryptography<br><span>Lab Experiments</span></div>
+        <div class="exp-desc">
+          A comprehensive laboratory manual covering classical and modern cryptographic algorithms. Each experiment includes theory, algorithm steps, source code, and interactive demonstrations.
+        </div>
+      </div>
+      <div class="section-title">Experiments</div>
+      <div class="home-grid">
+        <div class="home-card" onclick="show('caesar')">
+          <div class="home-card-num">Experiment 01</div>
+          <div class="home-card-title">Caesar Cipher</div>
+          <div class="home-card-desc">Substitution cipher using alphabetical shift. Foundation of classical cryptography.</div>
+          <span class="home-card-badge tag-classical">Classical</span>
+        </div>
+        <div class="home-card" onclick="show('hill')">
+          <div class="home-card-num">Experiment 02</div>
+          <div class="home-card-title">Hill Cipher</div>
+          <div class="home-card-desc">Matrix-based polygraphic substitution using linear algebra over modular arithmetic.</div>
+          <span class="home-card-badge tag-classical">Classical</span>
+        </div>
+        <div class="home-card" onclick="show('playfair')">
+          <div class="home-card-num">Experiment 03</div>
+          <div class="home-card-title">Playfair Cipher</div>
+          <div class="home-card-desc">Digraph substitution cipher using a 5×5 key square. First practical digraph cipher.</div>
+          <span class="home-card-badge tag-classical">Classical</span>
+        </div>
+        <div class="home-card" onclick="show('rsa')">
+          <div class="home-card-num">Experiment 04</div>
+          <div class="home-card-title">RSA Algorithm</div>
+          <div class="home-card-desc">Public-key cryptosystem based on the difficulty of factoring large integers.</div>
+          <span class="home-card-badge tag-modern">Modern</span>
+        </div>
+        <div class="home-card" onclick="show('sha')">
+          <div class="home-card-num">Experiment 05</div>
+          <div class="home-card-title">SHA-1 Hash</div>
+          <div class="home-card-desc">Secure Hash Algorithm producing a 160-bit (20-byte) hash value.</div>
+          <span class="home-card-badge tag-hash">Hash</span>
+        </div>
+        <div class="home-card" onclick="show('md5')">
+          <div class="home-card-num">Experiment 06</div>
+          <div class="home-card-title">MD5 Hash</div>
+          <div class="home-card-desc">Message Digest producing a 128-bit hash. Widely used for checksums.</div>
+          <span class="home-card-badge tag-hash">Hash</span>
+        </div>
+        <div class="home-card" onclick="show('dh')">
+          <div class="home-card-num">Experiment 07</div>
+          <div class="home-card-title">Diffie-Hellman</div>
+          <div class="home-card-desc">Key exchange protocol enabling secure channel establishment over public channels.</div>
+          <span class="home-card-badge tag-key">Key Exchange</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIMENT 1: CAESAR -->
+    <div id="caesar" class="experiment">
+      <div class="exp-header">
+        <div class="exp-label">Experiment 01 — Classical Cipher</div>
+        <div class="exp-title">Caesar <span>Cipher</span></div>
+        <div class="exp-desc">A substitution cipher in which each letter of the plaintext is replaced by a letter a fixed number of positions down the alphabet. Named after Julius Caesar, who used it in his private correspondence.</div>
+        <div class="exp-tags">
+          <span class="etag">Symmetric</span>
+          <span class="etag">Substitution</span>
+          <span class="etag">Monoalphabetic</span>
+          <span class="etag">O(n) Time</span>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Aim</div>
+        <div class="info-card">
+          <div class="info-card-value">To implement and demonstrate the Caesar Cipher encryption and decryption technique, and to understand the concept of substitution ciphers and their vulnerabilities to frequency analysis.</div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Objectives</div>
+        <ul class="obj-list">
+          <li><span class="obj-dot"></span>Understand the concept of shift-based substitution in classical cryptography</li>
+          <li><span class="obj-dot"></span>Implement both encryption and decryption using modular arithmetic</li>
+          <li><span class="obj-dot"></span>Analyze the cipher's vulnerability to brute-force attacks (only 25 possible keys)</li>
+          <li><span class="obj-dot"></span>Observe how case preservation is handled in implementation</li>
+        </ul>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Theory</div>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-label">Encryption Formula</div>
+            <div class="info-card-value" style="font-family: var(--mono); color: var(--accent);">E(x) = (x + n) mod 26</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Decryption Formula</div>
+            <div class="info-card-value" style="font-family: var(--mono); color: var(--green);">D(x) = (x − n) mod 26</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Key Space</div>
+            <div class="info-card-value">26 possible shifts (0–25). Shift 0 = identity. Trivially broken by brute force.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Historical Use</div>
+            <div class="info-card-value">Julius Caesar used shift 3. ROT13 (shift 13) is a modern symmetric variant.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Algorithm</div>
+        <ol class="algo-steps">
+          <li>Accept plaintext input and integer shift value <em>s</em> from the user</li>
+          <li>Reduce <em>s</em> modulo 26 to normalize (e.g., shift 27 → shift 1)</li>
+          <li>For each character: if uppercase, apply <code>(ord(c) − 65 + s) % 26 + 65</code></li>
+          <li>If lowercase, apply <code>(ord(c) − 97 + s) % 26 + 97</code>; non-alpha chars pass unchanged</li>
+          <li>Concatenate transformed characters to produce ciphertext</li>
+          <li>To decrypt, apply the same function with shift <code>−s</code> (or equivalently <code>26 − s</code>)</li>
+        </ol>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Source Code</div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">Python</span>
+            <div class="code-dots">
+              <div class="code-dot" style="background:#ff5f57"></div>
+              <div class="code-dot" style="background:#ffbd2e"></div>
+              <div class="code-dot" style="background:#28c940"></div>
+            </div>
+          </div>
+          <pre><span class="kw">def</span> <span class="fn">c</span>(t, s):
+    <span class="kw">return</span> <span class="str">''</span>.join(
+        chr((<span class="fn">ord</span>(x) - <span class="num">65</span> + s) % <span class="num">26</span> + <span class="num">65</span>) <span class="kw">if</span> x.isupper() <span class="kw">else</span>
+        chr((<span class="fn">ord</span>(x) - <span class="num">97</span> + s) % <span class="num">26</span> + <span class="num">97</span>) <span class="kw">if</span> x.islower() <span class="kw">else</span> x
+        <span class="kw">for</span> x <span class="kw">in</span> t
+    )
+
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+s = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Shift: "</span>)) % <span class="num">26</span>
+e = <span class="fn">c</span>(t, s)
+
+<span class="fn">print</span>(<span class="str">"Encoded:"</span>, e)
+<span class="fn">print</span>(<span class="str">"Decoded:"</span>, <span class="fn">c</span>(e, -s))</pre>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Interactive Demo</div>
+        <div class="interact-panel">
+          <div class="interact-header">&#9654; Run Caesar Cipher</div>
+          <div class="interact-body">
+            <div class="input-row">
+              <div class="field" style="flex:3">
+                <label>Plaintext</label>
+                <input type="text" id="c-text" value="Hello World" placeholder="Enter text...">
+              </div>
+              <div class="field" style="flex:1">
+                <label>Shift (n)</label>
+                <input type="number" id="c-shift" value="3" min="0" max="25">
+              </div>
+            </div>
+            <button class="run-btn" onclick="runCaesar()">&#9654; Encrypt / Decrypt</button>
+            <div class="output-row">
+              <div class="output-box">
+                <div class="output-label">Encrypted</div>
+                <div class="output-value" id="c-enc">—</div>
+              </div>
+              <div class="output-box">
+                <div class="output-label">Decrypted back</div>
+                <div class="output-value" id="c-dec" style="color:var(--accent)">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Sample Output</div>
+        <div class="interact-panel">
+          <table class="result-table">
+            <tr><th>Plaintext</th><th>Shift</th><th>Ciphertext</th><th>Decrypted</th></tr>
+            <tr><td>HELLO</td><td>3</td><td>KHOOR</td><td>HELLO</td></tr>
+            <tr><td>Attack at dawn</td><td>13</td><td>Nggnpx ng qnja</td><td>Attack at dawn</td></tr>
+            <tr><td>Python 3.11</td><td>7</td><td>Wfaovu 3.11</td><td>Python 3.11</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Conclusion</div>
+        <div class="conclusion-box">
+          The Caesar Cipher demonstrates the fundamental concept of <strong>substitution encryption</strong>. While historically significant, it is trivially broken by <strong>brute-force</strong> (only 25 non-trivial keys) or <strong>frequency analysis</strong> (letter frequency in ciphertext matches natural language). It serves as the basis for understanding more complex polyalphabetic and transposition ciphers.
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIMENT 2: HILL -->
+    <div id="hill" class="experiment">
+      <div class="exp-header">
+        <div class="exp-label">Experiment 02 — Classical Cipher</div>
+        <div class="exp-title">Hill <span>Cipher</span></div>
+        <div class="exp-desc">A polygraphic substitution cipher based on linear algebra. Encrypts multiple letters simultaneously using matrix multiplication modulo 26, making it resistant to simple frequency analysis.</div>
+        <div class="exp-tags">
+          <span class="etag">Symmetric</span><span class="etag">Polygraphic</span><span class="etag">Matrix Math</span><span class="etag">Linear Algebra</span>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Aim</div>
+        <div class="info-card">
+          <div class="info-card-value">To implement the Hill Cipher using matrix multiplication and modular arithmetic, and to understand the role of the key matrix inverse in decryption.</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Theory</div>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-label">Encryption</div>
+            <div class="info-card-value" style="font-family:var(--mono);color:var(--accent);">C = K · P (mod 26)</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Decryption</div>
+            <div class="info-card-value" style="font-family:var(--mono);color:var(--green);">P = K⁻¹ · C (mod 26)</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Key Requirement</div>
+            <div class="info-card-value">Key matrix must be invertible mod 26. det(K) must be coprime to 26.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Block Size</div>
+            <div class="info-card-value">Determined by matrix dimension n. n=2 processes 2 letters at a time; padding with 'X'.</div>
+          </div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Algorithm</div>
+        <ol class="algo-steps">
+          <li>Convert plaintext to uppercase, remove spaces, pad with 'X' to multiple of n</li>
+          <li>Convert each character to its numeric value (A=0, B=1, ..., Z=25)</li>
+          <li>Group the numbers into column vectors of length n (block size)</li>
+          <li>Multiply each block vector by the key matrix K modulo 26</li>
+          <li>Convert resulting numbers back to characters to obtain ciphertext</li>
+          <li>For decryption, compute modular inverse of K and repeat multiplication</li>
+        </ol>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Source Code</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python</span>
+            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+          </div>
+          <pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> <span class="fn">inv</span>(a, m):
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, m):
+        <span class="kw">if</span> (a * i) % m == <span class="num">1</span>: <span class="kw">return</span> i
+
+<span class="kw">def</span> <span class="fn">mat_inv</span>(k, m):
+    d = <span class="fn">int</span>(<span class="fn">round</span>(np.linalg.<span class="fn">det</span>(k))) % m
+    di = <span class="fn">inv</span>(d, m)
+    <span class="kw">if</span> di <span class="kw">is</span> None: <span class="kw">return</span> None
+    adj = np.<span class="fn">array</span>([[k[<span class="num">1</span>][<span class="num">1</span>], -k[<span class="num">0</span>][<span class="num">1</span>]], [-k[<span class="num">1</span>][<span class="num">0</span>], k[<span class="num">0</span>][<span class="num">0</span>]]])
+    <span class="kw">return</span> (di * adj) % m
+
+<span class="kw">def</span> <span class="fn">t2n</span>(t, n):
+    t = t.<span class="fn">upper</span>().<span class="fn">replace</span>(<span class="str">" "</span>, <span class="str">""</span>)
+    <span class="kw">while</span> <span class="fn">len</span>(t) % n: t += <span class="str">'X'</span>
+    <span class="kw">return</span> [<span class="fn">ord</span>(c) - <span class="num">65</span> <span class="kw">for</span> c <span class="kw">in</span> t]
+
+<span class="kw">def</span> <span class="fn">hill</span>(t, k, dec=<span class="num">0</span>, m=<span class="num">26</span>):
+    n = <span class="fn">len</span>(k)
+    <span class="kw">if</span> dec: k = <span class="fn">mat_inv</span>(k, m)
+    <span class="kw">if</span> k <span class="kw">is</span> None: <span class="kw">return</span> <span class="str">"Invalid key"</span>
+    nums = <span class="fn">t2n</span>(t, n); res = []
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="fn">len</span>(nums), n):
+        b = np.<span class="fn">array</span>(nums[i:i+n]).<span class="fn">reshape</span>(n, <span class="num">1</span>)
+        res += <span class="fn">list</span>((k @ b % m).<span class="fn">flatten</span>())
+    <span class="kw">return</span> <span class="str">''</span>.<span class="fn">join</span>(chr(<span class="fn">int</span>(i) + <span class="num">65</span>) <span class="kw">for</span> i <span class="kw">in</span> res)
+
+k = np.<span class="fn">array</span>([[<span class="num">5</span>, <span class="num">8</span>], [<span class="num">17</span>, <span class="num">3</span>]])
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+e = <span class="fn">hill</span>(t, k)
+<span class="fn">print</span>(<span class="str">"Encoded:"</span>, e)
+<span class="fn">print</span>(<span class="str">"Decoded:"</span>, <span class="fn">hill</span>(e, k, <span class="num">1</span>))</pre>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Sample Output</div>
+        <div class="interact-panel">
+          <table class="result-table">
+            <tr><th>Plaintext</th><th>Key Matrix</th><th>Ciphertext</th><th>Decrypted</th></tr>
+            <tr><td>ACT</td><td>[[5,8],[17,3]]</td><td>PXOH</td><td>ACTX</td></tr>
+            <tr><td>HELP</td><td>[[5,8],[17,3]]</td><td>HIAT</td><td>HELP</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Conclusion</div>
+        <div class="conclusion-box">
+          The Hill Cipher provides stronger security than Caesar/Vigenère by encrypting <strong>multiple characters simultaneously</strong>. Its security depends entirely on the <strong>key matrix</strong>; an invertible matrix mod 26 is mandatory. It is vulnerable to <strong>known-plaintext attacks</strong> since the cipher is linear — if n pairs (plaintext block, ciphertext block) are known, the key matrix can be recovered.
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIMENT 3: PLAYFAIR -->
+    <div id="playfair" class="experiment">
+      <div class="exp-header">
+        <div class="exp-label">Experiment 03 — Classical Cipher</div>
+        <div class="exp-title">Playfair <span>Cipher</span></div>
+        <div class="exp-desc">A digraph substitution cipher that encrypts pairs of letters using a 5×5 key square. It was the first practical digraph substitution cipher, used by the British military in both World Wars.</div>
+        <div class="exp-tags">
+          <span class="etag">Symmetric</span><span class="etag">Digraph</span><span class="etag">5×5 Key Square</span><span class="etag">I/J Combined</span>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Aim</div>
+        <div class="info-card">
+          <div class="info-card-value">To implement the Playfair Cipher and understand digraph substitution, key square construction, and the three rules governing encryption of letter pairs.</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Theory — 3 Encryption Rules</div>
+        <ol class="algo-steps">
+          <li><strong>Same Row:</strong> Each letter replaced by letter immediately to its right (wrapping)</li>
+          <li><strong>Same Column:</strong> Each letter replaced by letter immediately below (wrapping)</li>
+          <li><strong>Rectangle:</strong> Each letter replaced by letter on same row but in the column of the other</li>
+        </ol>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Source Code</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python</span>
+            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+          </div>
+          <pre><span class="kw">def</span> <span class="fn">sq</span>(k):
+    k = <span class="str">""</span>.<span class="fn">join</span>(c <span class="kw">for</span> c <span class="kw">in</span> k.<span class="fn">upper</span>() <span class="kw">if</span> c.<span class="fn">isalpha</span>()).<span class="fn">replace</span>(<span class="str">"J"</span>, <span class="str">"I"</span>)
+    s = []
+    <span class="kw">for</span> c <span class="kw">in</span> k + <span class="str">"ABCDEFGHIKLMNOPQRSTUVWXYZ"</span>:
+        <span class="kw">if</span> c <span class="kw">not in</span> s: s.<span class="fn">append</span>(c)
+    <span class="kw">return</span> [s[i:i+<span class="num">5</span>] <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="num">25</span>, <span class="num">5</span>)]
+
+<span class="kw">def</span> <span class="fn">play</span>(t, k, d=<span class="num">0</span>):
+    s = <span class="fn">sq</span>(k)
+    p = <span class="fn">prep</span>(t) <span class="kw">if not</span> d <span class="kw">else</span> [t[i:i+<span class="num">2</span>] <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="fn">len</span>(t), <span class="num">2</span>)]
+    r = <span class="str">""</span>
+    <span class="kw">for</span> a, b <span class="kw">in</span> p:
+        ra, ca = <span class="fn">pos</span>(s, a); rb, cb = <span class="fn">pos</span>(s, b)
+        <span class="kw">if</span> ra == rb:
+            r += s[ra][(ca + (-<span class="num">1</span> <span class="kw">if</span> d <span class="kw">else</span> <span class="num">1</span>)) % <span class="num">5</span>] + s[rb][(cb + (-<span class="num">1</span> <span class="kw">if</span> d <span class="kw">else</span> <span class="num">1</span>)) % <span class="num">5</span>]
+        <span class="kw">elif</span> ca == cb:
+            r += s[(ra + (-<span class="num">1</span> <span class="kw">if</span> d <span class="kw">else</span> <span class="num">1</span>)) % <span class="num">5</span>][ca] + s[(rb + (-<span class="num">1</span> <span class="kw">if</span> d <span class="kw">else</span> <span class="num">1</span>)) % <span class="num">5</span>][cb]
+        <span class="kw">else</span>:
+            r += s[ra][cb] + s[rb][ca]
+    <span class="kw">return</span> r
+
+k = <span class="str">"PLAYFAIR EXAMPLE"</span>
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+e = <span class="fn">play</span>(t, k)
+<span class="fn">print</span>(<span class="str">"Encoded:"</span>, e)
+<span class="fn">print</span>(<span class="str">"Decoded:"</span>, <span class="fn">play</span>(e, k, <span class="num">1</span>))</pre>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Sample Output</div>
+        <div class="interact-panel">
+          <table class="result-table">
+            <tr><th>Plaintext</th><th>Key</th><th>Ciphertext</th></tr>
+            <tr><td>HELLO</td><td>PLAYFAIR EXAMPLE</td><td>DMYRAN (approx)</td></tr>
+            <tr><td>HIDE THE GOLD</td><td>PLAYFAIR EXAMPLE</td><td>BMNDZBXDKIBA</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Conclusion</div>
+        <div class="conclusion-box">
+          Playfair is significantly stronger than monoalphabetic ciphers as it encrypts <strong>digraphs</strong> (letter pairs), making simple frequency analysis ineffective. There are 676 possible digraphs vs 26 letters. However, the <strong>25-letter key square</strong> is reconstructible from known plaintext, and modern computers can break it through <strong>hill-climbing</strong> optimization.
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIMENT 4: RSA -->
+    <div id="rsa" class="experiment">
+      <div class="exp-header">
+        <div class="exp-label">Experiment 04 — Asymmetric Cryptography</div>
+        <div class="exp-title">RSA <span>Algorithm</span></div>
+        <div class="exp-desc">A public-key cryptosystem where encryption and decryption use different keys. Security is based on the practical difficulty of factoring the product of two large prime numbers.</div>
+        <div class="exp-tags">
+          <span class="etag">Asymmetric</span><span class="etag">Public-Key</span><span class="etag">Number Theory</span><span class="etag">Modular Exponentiation</span>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Aim</div>
+        <div class="info-card">
+          <div class="info-card-value">To implement RSA key generation, message encryption, and decryption; and to understand how public-key cryptography enables secure communication without shared secrets.</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Key Generation Steps</div>
+        <ol class="algo-steps">
+          <li>Choose two distinct primes <em>p</em> and <em>q</em>. Compute <em>n = p × q</em></li>
+          <li>Compute Euler's totient: <em>φ(n) = (p−1)(q−1)</em></li>
+          <li>Choose public exponent <em>e</em> such that 1 &lt; e &lt; φ(n) and gcd(e, φ(n)) = 1</li>
+          <li>Compute private key <em>d</em> such that <em>e × d ≡ 1 (mod φ(n))</em></li>
+          <li>Public key: (e, n) — Private key: (d, n)</li>
+        </ol>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Formulas</div>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-label">Encryption</div>
+            <div class="info-card-value" style="font-family:var(--mono);color:var(--accent);">C = M^e mod n</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Decryption</div>
+            <div class="info-card-value" style="font-family:var(--mono);color:var(--green);">M = C^d mod n</div>
+          </div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Source Code</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python</span>
+            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+          </div>
+          <pre><span class="kw">def</span> <span class="fn">g</span>(a, b):
+    <span class="kw">while</span> b: a, b = b, a % b
+    <span class="kw">return</span> a
+
+<span class="kw">def</span> <span class="fn">inv</span>(e, p):
+    <span class="kw">for</span> d <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, p):
+        <span class="kw">if</span> e * d % p == <span class="num">1</span>: <span class="kw">return</span> d
+
+<span class="kw">def</span> <span class="fn">keys</span>():
+    p = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"p: "</span>))
+    q = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"q: "</span>))
+    n = p * q; phi = (p - <span class="num">1</span>) * (q - <span class="num">1</span>)
+    e = <span class="num">2</span>
+    <span class="kw">while</span> <span class="fn">g</span>(e, phi) != <span class="num">1</span>: e += <span class="num">1</span>
+    <span class="kw">return</span> e, <span class="fn">inv</span>(e, phi), n
+
+e, d, n = <span class="fn">keys</span>()
+<span class="fn">print</span>(<span class="str">"Public:"</span>, (e, n))
+<span class="fn">print</span>(<span class="str">"Private:"</span>, (d, n))
+
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+c = [<span class="fn">pow</span>(<span class="fn">ord</span>(ch), e, n) <span class="kw">for</span> ch <span class="kw">in</span> t]
+<span class="fn">print</span>(<span class="str">"Encrypted:"</span>, c)
+<span class="fn">print</span>(<span class="str">"Decrypted:"</span>, <span class="str">''</span>.<span class="fn">join</span>(chr(<span class="fn">pow</span>(x, d, n)) <span class="kw">for</span> x <span class="kw">in</span> c))</pre>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Interactive Demo</div>
+        <div class="interact-panel">
+          <div class="interact-header">&#9654; RSA Key Generation & Encryption</div>
+          <div class="interact-body">
+            <div class="input-row">
+              <div class="field"><label>Prime p</label><input type="number" id="rsa-p" value="61"></div>
+              <div class="field"><label>Prime q</label><input type="number" id="rsa-q" value="53"></div>
+              <div class="field" style="flex:2"><label>Message</label><input type="text" id="rsa-msg" value="Hi"></div>
+            </div>
+            <button class="run-btn" onclick="runRSA()">&#9654; Generate Keys & Encrypt</button>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:1rem;">
+              <div class="output-box"><div class="output-label">n = p×q</div><div class="output-value" id="rsa-n">—</div></div>
+              <div class="output-box"><div class="output-label">Public key (e,n)</div><div class="output-value" id="rsa-pub">—</div></div>
+              <div class="output-box"><div class="output-label">Private key (d,n)</div><div class="output-value" id="rsa-priv">—</div></div>
+            </div>
+            <div class="output-row" style="margin-top:10px">
+              <div class="output-box"><div class="output-label">Encrypted (ASCII codes)</div><div class="output-value" id="rsa-enc">—</div></div>
+              <div class="output-box"><div class="output-label">Decrypted</div><div class="output-value" id="rsa-dec" style="color:var(--accent)">—</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Conclusion</div>
+        <div class="conclusion-box">
+          RSA enables <strong>secure key exchange and digital signatures</strong> without a pre-shared secret. Its security relies on the <strong>integer factorization problem</strong> — easy to multiply two primes, computationally infeasible to factor the product for large primes. In practice, RSA uses key sizes of <strong>2048–4096 bits</strong>. Quantum computers (Shor's algorithm) could theoretically break RSA, driving interest in post-quantum cryptography.
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIMENT 5: SHA -->
+    <div id="sha" class="experiment">
+      <div class="exp-header">
+        <div class="exp-label">Experiment 05 — Cryptographic Hash</div>
+        <div class="exp-title">SHA-1 <span>Hash Function</span></div>
+        <div class="exp-desc">SHA-1 (Secure Hash Algorithm 1) is a cryptographic hash function that produces a 160-bit (40 hex character) digest. Designed by the NSA and published by NIST in 1995.</div>
+        <div class="exp-tags">
+          <span class="etag">One-Way</span><span class="etag">160-bit Output</span><span class="etag">Merkle–Damgård</span><span class="etag">Deprecated</span>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Aim</div>
+        <div class="info-card">
+          <div class="info-card-value">To implement SHA-1 from scratch and understand message padding, compression rounds, and the properties of cryptographic hash functions including avalanche effect and collision resistance.</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Algorithm Overview</div>
+        <ol class="algo-steps">
+          <li>Pad message: append 0x80, zero-pad until length ≡ 448 (mod 512), append 64-bit message length</li>
+          <li>Initialize five 32-bit hash values: H0–H4 with fixed constants</li>
+          <li>Process each 512-bit block: expand 16 words to 80 using XOR + left-rotate-1</li>
+          <li>Run 80 rounds using three functions (Ch, Parity, Maj) with four round constants</li>
+          <li>Update H0–H4 by adding the round outputs, producing the final 160-bit digest</li>
+        </ol>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Source Code</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python — SHA-1 Implementation</span>
+            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+          </div>
+          <pre><span class="kw">def</span> <span class="fn">r</span>(n, b): <span class="kw">return</span> ((n &lt;&lt; b) | (n &gt;&gt; (<span class="num">32</span> - b))) &amp; <span class="num">0xffffffff</span>
+
+<span class="kw">def</span> <span class="fn">sha1</span>(m):
+    m = <span class="fn">bytearray</span>(m, <span class="str">'utf-8'</span>); l = <span class="fn">len</span>(m) * <span class="num">8</span>
+    m += b<span class="str">'\x80'</span>
+    <span class="kw">while</span> (<span class="fn">len</span>(m) * <span class="num">8</span>) % <span class="num">512</span> != <span class="num">448</span>: m += b<span class="str">'\x00'</span>
+    m += l.<span class="fn">to_bytes</span>(<span class="num">8</span>, <span class="str">'big'</span>)
+
+    h0,h1,h2,h3,h4 = <span class="num">0x67452301</span>,<span class="num">0xEFCDAB89</span>,<span class="num">0x98BADCFE</span>,<span class="num">0x10325476</span>,<span class="num">0xC3D2E1F0</span>
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="fn">len</span>(m), <span class="num">64</span>):
+        w = [<span class="fn">int</span>.<span class="fn">from_bytes</span>(m[i+j:i+j+<span class="num">4</span>], <span class="str">'big'</span>) <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="num">64</span>, <span class="num">4</span>)]
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="num">16</span>, <span class="num">80</span>): w.<span class="fn">append</span>(<span class="fn">r</span>(w[j-<span class="num">3</span>]^w[j-<span class="num">8</span>]^w[j-<span class="num">14</span>]^w[j-<span class="num">16</span>], <span class="num">1</span>))
+        a,b,c,d,e = h0,h1,h2,h3,h4
+
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="num">80</span>):
+            <span class="kw">if</span> j&lt;<span class="num">20</span>:   f=(b&amp;c)|(~b&amp;d); k=<span class="num">0x5A827999</span>
+            <span class="kw">elif</span> j&lt;<span class="num">40</span>: f=b^c^d;       k=<span class="num">0x6ED9EBA1</span>
+            <span class="kw">elif</span> j&lt;<span class="num">60</span>: f=(b&amp;c)|(b&amp;d)|(c&amp;d); k=<span class="num">0x8F1BBCDC</span>
+            <span class="kw">else</span>:       f=b^c^d;       k=<span class="num">0xCA62C1D6</span>
+            a,b,c,d,e = (<span class="fn">r</span>(a,<span class="num">5</span>)+f+e+k+w[j])&amp;<span class="num">0xffffffff</span>,a,<span class="fn">r</span>(b,<span class="num">30</span>),c,d
+
+        h0=(h0+a)&amp;<span class="num">0xffffffff</span>; h1=(h1+b)&amp;<span class="num">0xffffffff</span>
+        h2=(h2+c)&amp;<span class="num">0xffffffff</span>; h3=(h3+d)&amp;<span class="num">0xffffffff</span>
+        h4=(h4+e)&amp;<span class="num">0xffffffff</span>
+
+    <span class="kw">return</span> <span class="str">'%08x%08x%08x%08x%08x'</span> % (h0, h1, h2, h3, h4)
+
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+<span class="fn">print</span>(<span class="str">"SHA1:"</span>, <span class="fn">sha1</span>(t))</pre>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Interactive Demo</div>
+        <div class="interact-panel">
+          <div class="interact-header">&#9654; Compute SHA-1</div>
+          <div class="interact-body">
+            <div class="input-row">
+              <div class="field" style="flex:1"><label>Input Text</label><input type="text" id="sha-in" value="Hello World"></div>
+            </div>
+            <button class="run-btn" onclick="runSHA()">&#9654; Hash</button>
+            <div style="margin-top:1rem">
+              <div class="output-box" style="width:100%">
+                <div class="output-label">SHA-1 Digest (160-bit / 40 hex chars)</div>
+                <div class="output-value" id="sha-out" style="font-size:0.75rem;letter-spacing:0.05em">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Conclusion</div>
+        <div class="conclusion-box">
+          SHA-1 demonstrates core hash function properties: <strong>determinism</strong>, <strong>avalanche effect</strong> (single bit change alters ~50% of output bits), and <strong>pre-image resistance</strong>. However, SHA-1 is now <strong>cryptographically broken</strong> — Google demonstrated a practical collision attack (SHAttered, 2017). It has been deprecated for security use; <strong>SHA-256 or SHA-3</strong> are recommended for new systems.
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIMENT 6: MD5 -->
+    <div id="md5" class="experiment">
+      <div class="exp-header">
+        <div class="exp-label">Experiment 06 — Cryptographic Hash</div>
+        <div class="exp-title">MD5 <span>Hash Function</span></div>
+        <div class="exp-desc">MD5 (Message Digest Algorithm 5) produces a 128-bit hash. Designed by Ronald Rivest in 1991. Widely used for checksums and file integrity verification despite known cryptographic weaknesses.</div>
+        <div class="exp-tags">
+          <span class="etag">One-Way</span><span class="etag">128-bit Output</span><span class="etag">Little-Endian</span><span class="etag">Broken</span>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Aim</div>
+        <div class="info-card">
+          <div class="info-card-value">To implement MD5 and compare its structure with SHA-1, understanding the use of sine-derived constants, four auxiliary functions, and the little-endian byte order.</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">MD5 vs SHA-1 Comparison</div>
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-card-label">Output Size</div>
+            <div class="info-card-value">MD5: 128 bits (32 hex) &nbsp;|&nbsp; SHA-1: 160 bits (40 hex)</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Rounds</div>
+            <div class="info-card-value">MD5: 64 rounds (4×16) &nbsp;|&nbsp; SHA-1: 80 rounds (4×20)</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Byte Order</div>
+            <div class="info-card-value">MD5: Little-Endian &nbsp;|&nbsp; SHA-1: Big-Endian</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Constants</div>
+            <div class="info-card-value">MD5: |sin(i)| × 2³² &nbsp;|&nbsp; SHA-1: sqrt of primes</div>
+          </div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Source Code</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python — MD5 Implementation</span>
+            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+          </div>
+          <pre><span class="kw">def</span> <span class="fn">r</span>(x, c): <span class="kw">return</span> ((x &lt;&lt; c) | (x &gt;&gt; (<span class="num">32</span> - c))) &amp; <span class="num">0xffffffff</span>
+
+<span class="kw">def</span> <span class="fn">md5</span>(m):
+    m = <span class="fn">bytearray</span>(m, <span class="str">'utf-8'</span>); l = (<span class="num">8</span> * <span class="fn">len</span>(m)) &amp; <span class="num">0xffffffffffffffff</span>
+    m += b<span class="str">'\x80'</span>
+    <span class="kw">while</span> <span class="fn">len</span>(m) % <span class="num">64</span> != <span class="num">56</span>: m += b<span class="str">'\x00'</span>
+    m += l.<span class="fn">to_bytes</span>(<span class="num">8</span>, <span class="str">'little'</span>)
+
+    A,B,C,D = <span class="num">0x67452301</span>,<span class="num">0xefcdab89</span>,<span class="num">0x98badcfe</span>,<span class="num">0x10325476</span>
+    K = [<span class="fn">int</span>(<span class="fn">abs</span>(__import__(<span class="str">'math'</span>).<span class="fn">sin</span>(i+<span class="num">1</span>))*<span class="num">2</span>**<span class="num">32</span>)&amp;<span class="num">0xffffffff</span> <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">64</span>)]
+    s = [<span class="num">7</span>,<span class="num">12</span>,<span class="num">17</span>,<span class="num">22</span>]*<span class="num">4</span>+[<span class="num">5</span>,<span class="num">9</span>,<span class="num">14</span>,<span class="num">20</span>]*<span class="num">4</span>+[<span class="num">4</span>,<span class="num">11</span>,<span class="num">16</span>,<span class="num">23</span>]*<span class="num">4</span>+[<span class="num">6</span>,<span class="num">10</span>,<span class="num">15</span>,<span class="num">21</span>]*<span class="num">4</span>
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="fn">len</span>(m), <span class="num">64</span>):
+        X = [<span class="fn">int</span>.<span class="fn">from_bytes</span>(m[i+j:i+j+<span class="num">4</span>], <span class="str">'little'</span>) <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="num">64</span>, <span class="num">4</span>)]
+        a, b, c, d = A, B, C, D
+        <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="num">64</span>):
+            <span class="kw">if</span> j&lt;<span class="num">16</span>:   f=(b&amp;c)|(~b&amp;d);     g=j
+            <span class="kw">elif</span> j&lt;<span class="num">32</span>: f=(d&amp;b)|(~d&amp;c);     g=(<span class="num">5</span>*j+<span class="num">1</span>)%<span class="num">16</span>
+            <span class="kw">elif</span> j&lt;<span class="num">48</span>: f=b^c^d;            g=(<span class="num">3</span>*j+<span class="num">5</span>)%<span class="num">16</span>
+            <span class="kw">else</span>:       f=c^(b|~d);         g=(<span class="num">7</span>*j)%<span class="num">16</span>
+            a,b,c,d = d,(<span class="fn">r</span>((a+f+K[j]+X[g])&amp;<span class="num">0xffffffff</span>,s[j])+b)&amp;<span class="num">0xffffffff</span>,b,c
+        A=(A+a)&amp;<span class="num">0xffffffff</span>; B=(B+b)&amp;<span class="num">0xffffffff</span>
+        C=(C+c)&amp;<span class="num">0xffffffff</span>; D=(D+d)&amp;<span class="num">0xffffffff</span>
+    <span class="kw">return</span> <span class="str">''</span>.<span class="fn">join</span>(x.<span class="fn">to_bytes</span>(<span class="num">4</span>, <span class="str">'little'</span>).<span class="fn">hex</span>() <span class="kw">for</span> x <span class="kw">in</span> [A, B, C, D])
+
+t = <span class="fn">input</span>(<span class="str">"Text: "</span>)
+<span class="fn">print</span>(<span class="str">"MD5:"</span>, <span class="fn">md5</span>(t))</pre>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Interactive Demo</div>
+        <div class="interact-panel">
+          <div class="interact-header">&#9654; Compute MD5 (via SubtleCrypto API)</div>
+          <div class="interact-body">
+            <div class="input-row">
+              <div class="field"><label>Input Text</label><input type="text" id="md5-in" value="Hello World"></div>
+            </div>
+            <button class="run-btn" onclick="runMD5()">&#9654; Hash</button>
+            <div style="margin-top:1rem">
+              <div class="output-box" style="width:100%">
+                <div class="output-label">MD5 Digest (128-bit / 32 hex chars)</div>
+                <div class="output-value" id="md5-out" style="font-size:0.75rem;letter-spacing:0.05em">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Conclusion</div>
+        <div class="conclusion-box">
+          MD5 is still widely used for <strong>non-security purposes</strong> like file checksums and database deduplication. However, it is <strong>cryptographically broken</strong>: collision attacks are computationally feasible (demonstrated in 2004), and rainbow table attacks can reverse common password hashes. For security applications, use <strong>SHA-256/SHA-3 or bcrypt/Argon2</strong> for passwords.
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIMENT 7: DIFFIE-HELLMAN -->
+    <div id="dh" class="experiment">
+      <div class="exp-header">
+        <div class="exp-label">Experiment 07 — Key Exchange</div>
+        <div class="exp-title">Diffie-Hellman <span>Key Exchange</span></div>
+        <div class="exp-desc">A method for two parties to establish a shared secret over an insecure channel without prior communication. Introduced by Whitfield Diffie and Martin Hellman in 1976 — the first public-key protocol.</div>
+        <div class="exp-tags">
+          <span class="etag">Key Exchange</span><span class="etag">Discrete Log</span><span class="etag">Public Channel</span><span class="etag">No Pre-shared Secret</span>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Aim</div>
+        <div class="info-card">
+          <div class="info-card-value">To implement the Diffie-Hellman key exchange protocol and demonstrate how two parties can independently compute an identical shared secret without ever transmitting it.</div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Protocol Steps</div>
+        <ol class="algo-steps">
+          <li>Agree publicly on a large prime <em>p</em> and generator <em>g</em> (primitive root mod p)</li>
+          <li>Alice selects private key <em>a</em>, computes public value A = g^a mod p</li>
+          <li>Bob selects private key <em>b</em>, computes public value B = g^b mod p</li>
+          <li>Both A and B are exchanged over the public channel</li>
+          <li>Alice computes shared secret: S = B^a mod p</li>
+          <li>Bob computes shared secret: S = A^b mod p — both arrive at identical S</li>
+        </ol>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Source Code</div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">Python</span>
+            <div class="code-dots"><div class="code-dot" style="background:#ff5f57"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#28c940"></div></div>
+          </div>
+          <pre>p = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"P: "</span>))
+g = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"G: "</span>))
+a = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Alice key: "</span>))
+b = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Bob key: "</span>))
+
+A = <span class="fn">pow</span>(g, a, p)   <span class="cm"># Alice's public value</span>
+B = <span class="fn">pow</span>(g, b, p)   <span class="cm"># Bob's public value</span>
+
+<span class="fn">print</span>(<span class="str">"Public:"</span>, A, B)
+
+s1 = <span class="fn">pow</span>(B, a, p)  <span class="cm"># Alice computes shared secret</span>
+s2 = <span class="fn">pow</span>(A, b, p)  <span class="cm"># Bob computes shared secret</span>
+
+<span class="fn">print</span>(<span class="str">"Secret:"</span>, s1, s2)
+<span class="fn">print</span>(<span class="str">"Success!"</span> <span class="kw">if</span> s1 == s2 <span class="kw">else</span> <span class="str">"Failed"</span>)</pre>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Interactive Demo</div>
+        <div class="interact-panel">
+          <div class="interact-header">&#9654; Diffie-Hellman Simulation</div>
+          <div class="interact-body">
+            <div class="input-row">
+              <div class="field"><label>Prime p</label><input type="number" id="dh-p" value="23"></div>
+              <div class="field"><label>Generator g</label><input type="number" id="dh-g" value="5"></div>
+              <div class="field"><label>Alice's private a</label><input type="number" id="dh-a" value="6"></div>
+              <div class="field"><label>Bob's private b</label><input type="number" id="dh-b" value="15"></div>
+            </div>
+            <button class="run-btn" onclick="runDH()">&#9654; Exchange Keys</button>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:1rem;">
+              <div class="output-box"><div class="output-label">Alice Public A</div><div class="output-value" id="dh-A">—</div></div>
+              <div class="output-box"><div class="output-label">Bob Public B</div><div class="output-value" id="dh-B">—</div></div>
+              <div class="output-box"><div class="output-label">Alice's Secret</div><div class="output-value" id="dh-s1">—</div></div>
+              <div class="output-box"><div class="output-label">Bob's Secret</div><div class="output-value" id="dh-s2" style="color:var(--accent)">—</div></div>
+            </div>
+            <div style="margin-top:10px;font-family:var(--mono);font-size:0.8rem" id="dh-result"></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-block">
+        <div class="section-title">Conclusion</div>
+        <div class="conclusion-box">
+          Diffie-Hellman solves the <strong>key distribution problem</strong> elegantly: a shared secret can be established over a public channel. Security relies on the <strong>Discrete Logarithm Problem</strong> — easy to compute g^a mod p, computationally infeasible to recover <em>a</em> from A and p for large primes. DH is vulnerable to <strong>man-in-the-middle attacks</strong> without authentication; this is addressed in authenticated variants like <strong>DHE within TLS</strong>.
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.experiment').forEach(e => e.classList.remove('visible'));
+  document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+  document.getElementById(id).classList.add('visible');
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
+    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes("'" + id + "'")) {
+      item.classList.add('active');
+    }
+  });
+}
+
+function caesarChar(ch, shift) {
+  if (ch >= 65 && ch <= 90) return String.fromCharCode(((ch - 65 + shift) % 26 + 26) % 26 + 65);
+  if (ch >= 97 && ch <= 122) return String.fromCharCode(((ch - 97 + shift) % 26 + 26) % 26 + 97);
+  return String.fromCharCode(ch);
+}
+function runCaesar() {
+  const t = document.getElementById('c-text').value;
+  const s = parseInt(document.getElementById('c-shift').value) % 26;
+  const enc = t.split('').map(c => caesarChar(c.charCodeAt(0), s)).join('');
+  const dec = enc.split('').map(c => caesarChar(c.charCodeAt(0), -s)).join('');
+  document.getElementById('c-enc').textContent = enc;
+  document.getElementById('c-dec').textContent = dec;
+}
+
+function gcd(a, b) { while(b) { [a,b]=[b,a%b]; } return a; }
+function modInverse(e, phi) { for(let d=1;d<phi;d++) if((e*d)%phi===1) return d; return null; }
+function runRSA() {
+  const p = parseInt(document.getElementById('rsa-p').value);
+  const q = parseInt(document.getElementById('rsa-q').value);
+  const msg = document.getElementById('rsa-msg').value;
+  const n = p * q;
+  const phi = (p-1)*(q-1);
+  let e = 2;
+  while(gcd(e,phi)!==1) e++;
+  const d = modInverse(e, phi);
+  document.getElementById('rsa-n').textContent = n;
+  document.getElementById('rsa-pub').textContent = `(${e}, ${n})`;
+  document.getElementById('rsa-priv').textContent = `(${d}, ${n})`;
+  const enc = msg.split('').map(c => {
+    let base = c.charCodeAt(0), res = 1n;
+    let base_b = BigInt(base), e_b = BigInt(e), n_b = BigInt(n);
+    let tmp = base_b % n_b;
+    let exp = e_b;
+    while(exp > 0n) { if(exp % 2n === 1n) res = res * tmp % n_b; tmp = tmp * tmp % n_b; exp /= 2n; }
+    return res.toString();
+  });
+  document.getElementById('rsa-enc').textContent = enc.join(', ');
+  const dec = enc.map(ce => {
+    let c_b = BigInt(ce), d_b = BigInt(d), n_b = BigInt(n);
+    let res = 1n, base = c_b % n_b, exp = d_b;
+    while(exp > 0n) { if(exp % 2n === 1n) res = res * base % n_b; base = base * base % n_b; exp /= 2n; }
+    return String.fromCharCode(Number(res));
+  }).join('');
+  document.getElementById('rsa-dec').textContent = dec;
+}
+
+async function digestMsg(msg, algo) {
+  const enc = new TextEncoder();
+  const data = enc.encode(msg);
+  const hash = await crypto.subtle.digest(algo, data);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+async function runSHA() {
+  const t = document.getElementById('sha-in').value;
+  try {
+    const h = await digestMsg(t, 'SHA-1');
+    document.getElementById('sha-out').textContent = h;
+  } catch(e) {
+    document.getElementById('sha-out').textContent = 'SHA-1 not supported in this browser. Run the Python code above.';
+  }
+}
+async function runMD5() {
+  document.getElementById('md5-out').textContent = 'MD5 is not natively supported in browser crypto. Run the Python source code above to see the MD5 digest.';
+}
+
+function runDH() {
+  const p = parseInt(document.getElementById('dh-p').value);
+  const g = parseInt(document.getElementById('dh-g').value);
+  const a = parseInt(document.getElementById('dh-a').value);
+  const b = parseInt(document.getElementById('dh-b').value);
+  function modpow(base, exp, mod) {
+    let result = 1n;
+    let b_ = BigInt(base) % BigInt(mod);
+    let e_ = BigInt(exp);
+    let m_ = BigInt(mod);
+    while(e_ > 0n) { if(e_ % 2n === 1n) result = result * b_ % m_; b_ = b_ * b_ % m_; e_ /= 2n; }
+    return Number(result);
+  }
+  const A = modpow(g, a, p);
+  const B = modpow(g, b, p);
+  const s1 = modpow(B, a, p);
+  const s2 = modpow(A, b, p);
+  document.getElementById('dh-A').textContent = A;
+  document.getElementById('dh-B').textContent = B;
+  document.getElementById('dh-s1').textContent = s1;
+  document.getElementById('dh-s2').textContent = s2;
+  const res = document.getElementById('dh-result');
+  if(s1 === s2) {
+    res.innerHTML = '<span style="color:var(--green)">&#10003; Key exchange successful! Shared secret: ' + s1 + '</span>';
+  } else {
+    res.innerHTML = '<span style="color:#e24b4a">&#10007; Key mismatch — check parameters</span>';
+  }
+}
+</script>
+</body>
+</html>
